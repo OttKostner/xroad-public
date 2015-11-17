@@ -1,0 +1,64 @@
+/**
+ * The MIT License
+ * Copyright (c) 2015 Estonian Information System Authority (RIA), Population Register Centre (VRK)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package ee.ria.xroad.common.signature;
+
+import lombok.Data;
+
+import ee.ria.xroad.common.util.CryptoUtils;
+
+
+/**
+ * Encapsulates part of the input that will be added to the signature.
+ */
+@Data
+public final class MessagePart {
+
+    /** Holds the name of the part. */
+    private final String name;
+
+     /** The identifier of the algorithm used to calculate the hash. */
+    private final String hashAlgoId;
+
+    /** The data in data. */
+    private final byte[] data;
+
+    /**
+     * @return the raw data
+     */
+    public byte[] getData() {
+        return data;
+    }
+
+    /**
+     * @return the hash algorithm URI
+     * @throws Exception if the algorithm is unknown
+     */
+    public String getHashAlgorithmURI() throws Exception {
+        return CryptoUtils.getDigestAlgorithmURI(hashAlgoId);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + hashAlgoId + ")";
+    }
+}

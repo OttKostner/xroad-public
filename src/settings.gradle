@@ -1,0 +1,29 @@
+// Common projects
+include "common-util"
+include "common-verifier"
+include "common-ui"
+include "common-db"
+include "common-messagelog"
+include "signer-protocol"
+include "serverconf"
+
+// Main projects
+include "proxy"
+include "proxy-ui"
+include "signer"
+include "async-db"
+include "async-sender"
+include "configuration-client"
+include "asicverifier"
+include "asic-util"
+
+// Utils
+include "signer-console"
+
+// Tests
+include "common-test"
+
+// Addons
+include "addons:hwtoken"
+include "addons:messagelog"
+include "addons:metaservice"

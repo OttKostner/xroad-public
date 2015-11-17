@@ -1,0 +1,56 @@
+Source: xroad
+Section: X-Road
+Priority: extra
+Maintainer: Tarmo Oja <Tarmo.Oja@cyber.ee>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.3
+
+Package: xroad-common
+Architecture: amd64
+Depends: ${misc:Depends}, java8-runtime-headless, rlwrap, nginx-light (>=1.5.10), ca-certificates-java, ntp, crudini, adduser
+Description: X-Road shared components
+ X-Road shared components and utilities
+
+Package: xroad-securityserver
+Conflicts: xroad-centralserver
+Architecture: all
+Depends: xroad-proxy (>=${source:Upstream-Version}), xroad-addon-metaservices (>=${source:Upstream-Version}), xroad-addon-messagelog (>=${source:Upstream-Version})
+Pre-depends:
+Description: X-Road security server
+ This is meta-package of X-Road security server.
+
+Package: xroad-proxy
+Conflicts: xroad-center, xroad-confproxy
+Architecture: all
+Depends: ${misc:Depends}, rsyslog, xroad-jetty9  (>=${source:Upstream-Version}), curl, authbind
+Pre-depends: postgresql, postgresql-contrib, xroad-common (>=${source:Upstream-Version})
+Description: X-Road security server
+ X-Road security server programs and utilities
+
+Package: xroad-addon-hwtokens
+Architecture: all
+Depends: ${misc:Depends}, xroad-common (>=${source:Upstream-Version})
+Description: X-Road AddOn: hwtokens
+ AddOn for hardware tokens
+
+Package: xroad-addon-messagelog
+Architecture: all
+Depends: ${misc:Depends}, xroad-proxy (>=${source:Upstream-Version})
+Conflicts: xroad-addon-legacy-securelog
+Description: X-Road AddOn: messagelog
+ AddOn for secure message log
+
+Package: xroad-addon-metaservices
+Architecture: all
+Depends: ${misc:Depends}, xroad-proxy (>=${source:Upstream-Version})
+Description: X-Road AddOn: metaservices
+ AddOn for metaservice reponders
+
+Package: xroad-securityserver-fi
+Conflicts: xroad-centralserver
+Architecture: all
+Depends: xroad-securityserver (>=${source:Upstream-Version})
+Pre-depends:
+Description: X-Road security server with Finnish settings
+ This is meta-package of X-Road security server with Finnish settings.
+

@@ -1,0 +1,179 @@
+xroad (6.7.4-1) trusty; urgency=low
+
+  * Add MIT license header to security server source code
+  * Add LICENSE.info file to security server source code and binaries
+  * Add LICENSE.info file to central server source code and binaries
+  * Add LICENSE.info file to configuration proxy source code and binaries
+  * Add LICENSE file containing MIT license to security server source code and binaries
+  * Fixed 'Global configuration expired' error occurring under heavy load
+  * The password for messagelog and serverconf databases is generated during installation
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 12 Nov 2015 12:48:18 +0300
+
+xroad (6.7.3-1) trusty; urgency=low
+
+  * Add license information
+  * Refactor proxy setup scripts (RHEL)
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 26 Oct 2015 16:10:22 +0300
+
+xroad (6.7.2-1) trusty; urgency=medium
+
+  * Fix nginx configuration (remove X-Frame-Options)
+  
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 19 Oct 2015 11:12:56 +0300
+
+xroad (6.7.1-1) trusty; urgency=low
+
+  * Finnish settings set SHA256withRSA as default signature algorithm
+  * Finnish settings set SHA256withRSA as default CSR signature algorithm
+  * Configurable message body logging
+  * Perfect forward secrecy management services
+  * Security server user interface uses TLSv1.2
+  * Central server user interface uses TLSv1.2
+  * Security server communicates with backend services using TLSv1.2
+  * Perfect forward secrecy for security server user interface
+  * Perfect forward secrecy for central server user interface
+  * Perfect forward secrecy for security server communications with backend services
+  * Fixed SonarQube static analysis blocker issues
+  * Management services use TLSv1.2
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Wed, 14 Oct 2015 12:07:08 +0300
+
+xroad (6.7-0) trusty; urgency=low
+
+  * Member Code/Identifier Extractor for Finnish instance 
+    o Signing certificate subject DN format supported by the decoder: C=FI,O=<instanceIdentifier>, OU=<memberClass>, CN=<memberCode> (e.g. C=FI, O=FI-DEV, OU=PUB, CN=1234567-8)
+  * Configurable key size for signing and authentication RSA keys 
+    o New configuration parameter signer.key-length (default 2048)
+  * Configurable certificate signing request signing algorithm 
+    o New configuration parameter signer.csr-signature-algorithm (default: SHA1withRSA)
+  * New security server metapackage with default configuration for Finnish instance
+    o xroad-securityserver-fi
+    o uses SHA256withRSA as signer.csr-signature-algorithm
+  * Fixed atomic save to work between separate file systems
+    o OS temp directory and X-Road software can now reside on different file systems
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Tue, 29 Sep 2015 09:36:56 +0300
+
+xroad (6.6-2) trusty; urgency=low
+
+  * Bugfixes
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Tue, 15 Sep 2015 13:04:42 +0300
+
+xroad (6.6-1) trusty; urgency=low
+
+  * Bugfixes
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Thu, 10 Sep 2015 15:15:07 +0300
+
+xroad (6.6-0) trusty; urgency=low
+
+  * The "userId" field of the X-Road SOAP message header was made optional
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Thu, 30 Jul 2015 14:57:06 +0300
+
+xroad (6.5-1) trusty; urgency=low
+
+  * WSDL reload bugfix
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Thu, 23 Jul 2015 13:08:16 +0300
+
+xroad (6.5-0) trusty; urgency=low
+
+  * Possibility to download signed documents and verification configuration
+  * Auditlog
+  * Bugfixes
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Tue, 30 Jun 2015 12:52:44 +0300
+
+xroad (6.4-1) trusty; urgency=low
+
+   * corrected mime-attachment handling
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Thu, 18 Jun 2015 17:08:14 +0300
+
+xroad (6.4-0) trusty; urgency=low
+
+   * User session is closed after inactivity
+   * Data versioning at database level
+   * listClients returns member name
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Mon, 25 May 2015 13:27:42 +0300
+
+xroad (6.3-0) trusty; urgency=low
+
+   * Xroad 6.3
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Tue, 07 Apr 2015 16:08:54 +0300
+
+xroad (6.2-0) trusty; urgency=low
+
+   [Added modules]
+   * Messagelog
+   * Metaservices
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Tue, 31 Mar 2015 11:02:36 +0300
+
+xroad (6.1-2) trusty; urgency=low
+
+   Minor bugfixes for UI.
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Tue, 23 Dec 2014 11:08:38 +0200
+
+xroad (6.1-1) trusty; urgency=low
+
+   Minor bugfixes for UI behaviour and for HSM based key handling.
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Mon, 15 Dec 2014 23:26:33 +0200
+
+xroad (6.1-0) trusty; urgency=low
+
+   [General]
+   * Added new separately installable component: configuration proxy (xroad-confproxy)
+   * Changed the format and location of system configuration files.
+   * Added support for federating two X-Road instances.
+   * Added new command-line utilities for managing Signer component.
+
+   [Depenencies]
+   * Java 8
+   * Jetty 9
+   * JRuby 1.7.16.1 security fix
+
+   [Central]
+    Many user interface fixes and improvements.
+    Added user interface for managing member classes.
+    Added user interface for configuring management service.
+    Added user interface for configuring system parameters.
+    Added user interface for initializing central server.
+    Changed names of some system parameters.
+    Some system parameters are now automatically filled during installation.
+    Added new configuration file for configuring installation-specific configuration parts (such as identifiermapping.xml).
+    The server-owners group can no longer managed manually.
+    Added foreign keys to databases.
+
+   [Security server]
+   * Many user interface fixes and improvements.
+   * User cannot upload configuration anchor that points to configuration that does not contain private parameters #5092 #PJ, #KJ
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Mon, 01 Dec 2014 13:07:34 +0200
+
+xroad (6.0-99.3) trusty; urgency=low
+
+  * version bump
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Mon, 08 Sep 2014 09:26:42 +0300
+
+xroad (6.0-99.1) trusty; urgency=low
+
+  * version bump
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Mon, 14 Jul 2014 15:42:15 +0300
+
+xroad (6.0-2) trusty; urgency=low
+
+  * package for 14.04
+
+ -- Tarmo Oja <tarmo.oja@cyber.ee>  Wed, 25 June 2014 14:58:20 +0200
+

@@ -1,0 +1,41 @@
+Content-Type: multipart/related; charset=UTF-8;boundary=envelopeboundary
+
+--envelopeboundary
+Content-Type: multipart/mixed; charset=UTF-8;boundary=innerboundary
+
+--innerboundary
+Expire-date: 2016-05-20T17:42:55Z
+
+
+--innerboundary
+Content-type: application/octet-stream
+Content-transfer-encoding: base64
+Content-identifier: PRIVATE-PARAMETERS; instance="EE"
+Content-location: /private-params.xml
+Hash-algorithm-id: http://www.w3.org/2001/04/xmlenc#sha512
+
+g7JIW1+5NGj+gsmm3rUvoPQ0WMRjEP8XxW2cXfeRlJVH6dxmFDm/HctxHmpmuTUao+iHhAplPF25f4VzHqB7hA==
+--innerboundary
+Content-type: application/octet-stream
+Content-transfer-encoding: base64
+Content-identifier: SHARED-PARAMETERS; instance="EE"
+Content-location: /shared-params.xml
+Hash-algorithm-id: http://www.w3.org/2001/04/xmlenc#sha512
+
+1+D5T14Ccx1PZDHVuDKxvy8/GO0nxCrkB3W4FraGBEFRO5QKI1fYRvMfeMEYc9SeqMdVsoe0aJfA0CQzlovwIA==
+--innerboundary
+Content-type: application/octet-stream
+Content-transfer-encoding: base64
+Content-identifier: FOO; instance="EE"
+Content-location: /foo.xml
+Hash-algorithm-id: http://www.w3.org/2001/04/xmlenc#sha512
+
+gFe08pHaSMrfRFv4lWjDlZpPVJ3zU+0cca6j7bZOhKUC+L1b7pGrdUcV2yoA9qTWwtMqT5L1WRzyplCdNBrOyw==
+--envelopeboundary
+Content-type: application/octet-stream
+Content-transfer-encoding: base64
+Signature-algorithm-id: http://www.w3.org/2001/04/xmldsig-more#rsa-sha512
+Verification-certificate-hash: JcdLt1xfZxnM4XHtwDWwTLKLDHmGaXq6IgBjtMATMGft3psVltGCy/gtQzxRsiar7mz2PwoR5uLpnOHOo1L/sw==; hash-algorithm-id="http://www.w3.org/2001/04/xmlenc#sha512"
+
+sS6mEexBLzYYR2NV1v764Ix4U9I++Tog7FXUXnKi8WbjLFU+I5/fCgWGOID6m4PQ9ebkIWwq3/8Dk/3/z5d0zPXK5drJqIPslN8SNB7fu/ZZnyCpf7P8ZwGEJSxt/nuKuyUORJPd89tZpIuUFj9PiB9GP1jFmi0qN0wh8C1jsnJCVa9epWGbB+HWJfoxkVs0L25B9CkU8pJuTXfwQfFdp0nG8o6tUIIGGu3PEgrUqnBefV5tM6W713pYz4q+LQKc6a2+EUgFdgIAMcoHR61hbMO7/3pYRK15cjJRtggVbRSfAPOAcZNT/zvi648JInGpQI2TuvYZZ7aEP9ioqZ1vyQ==
+--envelopeboundary--
