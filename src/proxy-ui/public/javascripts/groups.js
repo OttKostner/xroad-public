@@ -374,8 +374,8 @@
         var opts = scrollableTableOpts(250);
         opts.sDom = "<'dataTables_header'f<'clearer'>>t";
         opts.aoColumns = [
-            { "mData": "code" },
-            { "mData": "description" },
+            { "mData": "code", mRender: util.escape },
+            { "mData": "description", mRender: util.escape },
             { "mData": "member_count" },
             { "mData": "updated" }
         ];
@@ -413,11 +413,11 @@
               },
               "sWidth": "30%"
             },
-            { "mData": "type", "bVisible": false },
-            { "mData": "instance", "bVisible": false },
-            { "mData": "class", "bVisible": false },
-            { "mData": "code", "bVisible": false },
-            { "mData": "subsystem", "bVisible": false },
+            { "mData": "type", "bVisible": false, mRender: util.escape },
+            { "mData": "instance", "bVisible": false, mRender: util.escape },
+            { "mData": "class", "bVisible": false, mRender: util.escape },
+            { "mData": "code", "bVisible": false, mRender: util.escape },
+            { "mData": "subsystem", "bVisible": false, mRender: util.escape },
             { "mData": function(source, type, val) {
                   return generateIdElement({
                       "Type": source.type,
@@ -458,7 +458,7 @@
         var opts = scrollableTableOpts(250);
         opts.sDom = "<'dataTables_header'<'clearer'>>t";
         opts.aoColumns = [
-            { "mData": "name_description" },
+            { "mData": "name_description", mRender: util.escape },
             {
                 mData: function(source, type, val) {
                     return generateIdElement({

@@ -107,7 +107,7 @@
         var opts = scrollableTableOpts(345);
         opts.sDom = "t";
         opts.aoColumns = [
-            { "mData": "name_description" },
+            { "mData": "name_description", mRender: util.escape },
             {
                 mData: function(source, type, val) {
                     return generateIdElement({

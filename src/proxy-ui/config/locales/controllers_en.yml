@@ -77,6 +77,8 @@ en:
     action:
       tsp_add: "add timestamping service"
       tsp_delete: "delete timestamping service"
+    cert_invalid: "Invalid certificate"
+    cert_loaded: "Certificate loaded"
     distributor_exists: "Distributor already exists"
     tsp_exists: "timestamping service already exists"
     tsp_not_approved: "timestamping service not approved"

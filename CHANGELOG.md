@@ -1,5 +1,14 @@
 # Change Log
 
+## 6.7.6 - 2015-11-27
+- Fixed changing of security server configuration anchor
+
+## 6.7.5 - 2015-11-26
+- Updated member code/identifier extractor for Finnish instance
+- Fixed XSS vulnerabilities in central server and security server user interfaces
+- RHEL installation does not redirect clientproxy ports automatically
+- Security server's internal TLS certificate can be replaced from the UI
+
 ## 6.7.4 - 2015-11-12
 - Add MIT license header to security server source code
 - Add LICENSE.info file to security server source code and binaries

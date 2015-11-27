@@ -60,24 +60,63 @@ public class FISubjectClientIdDecoderTest {
 
     @Test
     public void shouldDecodeClientId() throws GeneralSecurityException, IOException, OperatorCreationException {
+        X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        ClientId clientId = FISubjectClientIdDecoder.getSubjectClientId(cert);
+        assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
+
+        cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        clientId = FISubjectClientIdDecoder.getSubjectClientId(cert);
+        assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
+    }
+
+    @Test(expected = CodedException.class)
+    public void shouldFailIfEmptyComponents() throws GeneralSecurityException, IOException, OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=///", keyPair);
+        FISubjectClientIdDecoder.getSubjectClientId(cert);
+    }
+
+    @Test(expected = CodedException.class)
+    public void shouldFailIfTooManyComponents() throws GeneralSecurityException, IOException, OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=1/2/3/4", keyPair);
+        FISubjectClientIdDecoder.getSubjectClientId(cert);
+    }
+
+    @Test(expected = CodedException.class)
+    public void shouldFailIfCountryDoesNotMatch() throws GeneralSecurityException, IOException, OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate("C=XX, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        FISubjectClientIdDecoder.getSubjectClientId(cert);
+    }
+
+    @Test(expected = CodedException.class)
+    public void shouldFailIfOrgMissing() throws GeneralSecurityException, IOException, OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate("C=FI, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        FISubjectClientIdDecoder.getSubjectClientId(cert);
+    }
+
+    /*
+    Tests for legacy format
+     */
+    @Test
+    public void shouldDecodeClientIdLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
         final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=FI-TEST, OU=PUB, CN=1234567-8", keyPair);
         ClientId clientId = FISubjectClientIdDecoder.getSubjectClientId(cert);
         assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
     }
 
     @Test(expected = CodedException.class)
-    public void shouldFailIfCountryDoesNotMatch() throws GeneralSecurityException, IOException, OperatorCreationException {
-        final X509Certificate cert = generateSelfSignedCertificate("C=XX, O=FI-TEST, OU=PUB, CN=1234567-8", keyPair);
-        FISubjectClientIdDecoder.getSubjectClientId(cert);
-    }
-
-    @Test(expected = CodedException.class)
-    public void shouldFailIfComponentMissing() throws GeneralSecurityException, IOException, OperatorCreationException {
+    public void shouldFailIfComponentMissingLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
         final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=FI-TEST, CN=1234567-8", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
-    X509Certificate generateSelfSignedCertificate(String dn, KeyPair pair) throws OperatorCreationException, CertificateException {
+    @Test(expected = CodedException.class)
+    public void shouldFailIfCountryDoesNotMatchLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate("C=XX, O=FI-TEST, OU=PUB, CN=1234567-8", keyPair);
+        FISubjectClientIdDecoder.getSubjectClientId(cert);
+    }
+
+
+    private X509Certificate generateSelfSignedCertificate(String dn, KeyPair pair) throws OperatorCreationException, CertificateException {
         ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").build(pair.getPrivate());
         X500Name name = new X500Name(dn);
         JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(

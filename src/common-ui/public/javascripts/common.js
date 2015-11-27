@@ -6,6 +6,27 @@ function can(privilege) {
     return PRIVILEGES.indexOf(privilege) != -1;
 }
 
+var util = (function(){
+    var regexEscape = /["&'<>`]/g;
+    var escapeMap = {
+        '"': '&quot;',
+        '&': '&amp;',
+        '\'': '&#x27;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '`': '&#x60;'
+    };
+    var replaceFn = function (m) { return escapeMap[m]; };
+    return {
+        "escape": function(string) {
+            if ( string === undefined || string === null ) {
+                return "";
+            }
+            return String(string).replace(regexEscape, replaceFn);
+        }
+    };
+}());
+
 $.fn.disable = function() {
     if (this.is("label.upload")) {
         this.find("input[type=file]").attr("disabled", "true");
@@ -677,14 +698,28 @@ function scrollableTableOpts(maxY) {
     return result;
 }
 
-function _(str, params) {
+function _(str, params, escapeParams) {
+
+    if ( escapeParams !== false && params && typeof(params) == "object" ) {
+        var escapedParams = {};
+        for ( var p in params ) {
+            if ( params.hasOwnProperty(p) ) {
+                var value = params[p];
+                if ( value !== undefined && value !== null ) {
+                    escapedParams[p] = util.escape(value);
+                }
+            }
+        }
+        return I18n.t(str, escapedParams);
+    }
+
     return I18n.t(str, params);
 }
 
 function confirm(text, params, success) {
     var title = _(text + "_title", {
         defaultValue: _("layouts.application.confirm_title")
-    });
+    }, false);
 
     $("#confirm").html(_(text, params)).initDialog({
         title: title,
@@ -710,7 +745,7 @@ function confirm(text, params, success) {
 function yesno(text, params, success) {
     var title = _(text + "_title", {
         defaultValue: _("layouts.application.yesno_title")
-    });
+    }, false);
 
     $("#yesno").html(_(text, params)).initDialog({
         title: title,
@@ -736,7 +771,7 @@ function yesno(text, params, success) {
 function warning(text, params, success) {
     var title = _(text + "_title", {
         defaultValue: _("layouts.application.warning_title")
-    });
+    }, false);
 
     $("#warning").html(_(text, params)).initDialog({
         title: title,
@@ -761,7 +796,7 @@ function warning(text, params, success) {
 function alert(text, params, success) {
     var title = _(text + "_title", {
         defaultValue: _("layouts.application.alert_title")
-    });
+    }, false);
 
     $("#alert").html(_(text, params)).initDialog({
         title: title,

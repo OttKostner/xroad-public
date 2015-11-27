@@ -1,3 +1,17 @@
+xroad (6.7.6-1) trusty; urgency=low
+
+  * Fixed changing of security server configuration anchor
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 27 Nov 2015 12:50:01 +0300
+
+xroad (6.7.5-1) trusty; urgency=low
+
+  * Updated member code/identifier extractor for Finnish instance
+  * Fixed XSS vulnerabilities in central server and security server user interfaces
+  * Security server's internal TLS certificate can be replaced from the UI
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 26 Nov 2015 15:42:01 +0300
+
 xroad (6.7.4-1) trusty; urgency=low
 
   * Add MIT license header to security server source code

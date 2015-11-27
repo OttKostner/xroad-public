@@ -1,9 +1,13 @@
 #!/bin/bash
-if [ "$DISABLE_PORT_REDIRECT" != "" ];
+# iptables port redirection for ports 80 and 443
+# see also xroad-proxy.service unit file
+
+if [ "$DISABLE_PORT_REDIRECT" != "false" ];
 then
     exit 0
 fi
 
+# read HTTP and HTTPS port from x-road proxy config and local.ini
 declare -A config;
 
 read_config () {
@@ -42,14 +46,16 @@ else
 fi
 
 if [ "$HTTPS_PORT" != "0" ]; then
+    # redirect 443 to HTTPS_PORT
     iptables $CMD PREROUTING $POS -t nat $IFACE_PARAM -p tcp --dport 443 -j REDIRECT --to-port $HTTPS_PORT
+    # mark traffic sent to the orginal port (can be dropped in filter table)
     iptables $CMD PREROUTING $POS -t mangle $IFACE_PARAM -p tcp --dport $HTTPS_PORT -j MARK --set-mark 456
 fi
 
 if [ "$HTTP_PORT" != "0" ]; then
+    # redirect 80 to HTTP_PORT
     iptables $CMD PREROUTING $POS -t nat $IFACE_PARAM -p tcp --dport 80 -j REDIRECT --to-port $HTTP_PORT
+    # mark traffic sent to HTTP_PORT (can be dropped in filter table)
     iptables $CMD PREROUTING $POS -t mangle $IFACE_PARAM -p tcp --dport $HTTP_PORT -j MARK --set-mark 456
 fi
-
-iptables $CMD INPUT $POS -m mark --mark 456 -j DROP
 

@@ -30,18 +30,12 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.cert.X509Certificate;
+import java.util.regex.Pattern;
 
 import static ee.ria.xroad.common.util.CertUtils.getRDNValue;
 
 /**
  * Helper class for decoding ClientId from Finnish X-Road instance signing certificates.
- * The clientId is encoded as follows:
- * <ul>
- *  <li>C = FI (country code must be 'FI' when using this decoder)</li>
- *  <li>O = instanceId</li>
- *  <li>OU = memberClass</li>
- *  <li>CN = memberCode (business code without "Y" prefix)</li>
- * </ul>
  * Created by hyoty on 25.8.2015.
  */
 public final class FISubjectClientIdDecoder {
@@ -58,6 +52,73 @@ public final class FISubjectClientIdDecoder {
         X500Principal principal = cert.getSubjectX500Principal();
         X500Name x500name = new X500Name(principal.getName());
 
+        if ( getRDNValue(x500name, BCStyle.SERIALNUMBER) == null ) {
+            return parseClientIdFromLegacyName(x500name);
+        }
+        return parseClientId(x500name);
+    }
+
+    /*
+     * The encoding for clientID:
+     * <ul>
+     *  <li>C = FI (country code must be 'FI' when using this decoder)</li>
+     *  <li>O = organization (must be present)
+     *  <li>CN = memberCode (business code without "Y" prefix)</li>
+     *  <li>serialNumber = instanceIdentifier;serverCode;memberClass
+     * </ul>
+     */
+
+    private static final Pattern splitPattern = Pattern.compile("/");
+
+    private static ClientId parseClientId(X500Name x500name) {
+        String c = getRDNValue(x500name, BCStyle.C);
+        if (! "FI".equals(c) ) {
+            throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
+                    "Certificate subject name does not contain valid country code");
+        }
+
+        if (getRDNValue(x500name, BCStyle.O) == null) {
+            throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
+                    "Certificate subject name does not contain organization");
+        }
+
+        String memberCode = getRDNValue(x500name, BCStyle.CN);
+        if (memberCode == null) {
+            throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
+                    "Certificate subject name does not contain common name");
+        }
+
+        String serialNumber = getRDNValue(x500name, BCStyle.SERIALNUMBER);
+        if (serialNumber == null) {
+            throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
+                    "Certificate subject name does not contain serial number");
+        }
+
+        final String[] components = splitPattern.split(serialNumber);
+        if ( components.length != 3 ) {
+            throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
+                    "Certificate subject name's attribute serialNumber has invalid value");
+        }
+
+        // Note. components[1] = serverCode, unused
+        return ClientId.create(
+                components[0], // instanceId
+                components[2], // memberClass
+                memberCode);
+
+    }
+
+
+    /*
+     * The legacy encoding for clientID:
+     * <ul>
+     *  <li>C = FI (country code must be 'FI' when using this decoder)</li>
+     *  <li>O = instanceId</li>
+     *  <li>OU = memberClass</li>
+     *  <li>CN = memberCode (business code without "Y" prefix)</li>
+     * </ul>
+     */
+    private static ClientId parseClientIdFromLegacyName(X500Name x500name) {
         String c = getRDNValue(x500name, BCStyle.C);
         if (! "FI".equals(c) ) {
             throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,

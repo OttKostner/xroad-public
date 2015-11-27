@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 GRADLE_HOME="$HOME/gradle-2.4/"

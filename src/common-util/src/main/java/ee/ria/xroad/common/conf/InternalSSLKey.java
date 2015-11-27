@@ -46,9 +46,11 @@ import static ee.ria.xroad.common.util.CryptoUtils.loadPkcs12KeyStore;
 @RequiredArgsConstructor
 public final class InternalSSLKey {
 
-    private static final String KEY_FILE_NAME = "ssl/internal.p12";
-    private static final String KEY_ALIAS = "internal";
-    private static final char[] KEY_PASSWORD = "internal".toCharArray();
+    public static final String PK_FILE_NAME = "ssl/internal.key";
+    public static final String CRT_FILE_NAME = "ssl/internal.crt";
+    public static final String KEY_FILE_NAME = "ssl/internal.p12";
+    public static final String KEY_ALIAS = "internal";
+    public static final char[] KEY_PASSWORD = "internal".toCharArray();
 
     private final PrivateKey key;
     private final X509Certificate cert;

@@ -130,11 +130,11 @@
                   }
               }
             },
-            { "mData": "type", "bVisible": false },
-            { "mData": "instance", "bVisible": false },
-            { "mData": "member_class", "bVisible": false },
-            { "mData": "member_group_code", "bVisible": false },
-            { "mData": "subsystem_code", "bVisible": false },
+            { "mData": "type", "bVisible": false, mRender: util.escape },
+            { "mData": "instance", "bVisible": false, mRender: util.escape },
+            { "mData": "member_class", "bVisible": false, mRender: util.escape },
+            { "mData": "member_group_code", "bVisible": false, mRender: util.escape },
+            { "mData": "subsystem_code", "bVisible": false, mRender: util.escape },
             {
                 mData: function(source, type, val) {
                     return generateIdElement({

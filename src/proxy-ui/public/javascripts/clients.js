@@ -208,7 +208,7 @@
                   id: "client_select_ok",
                   click: function() {
                       var client = oClientsGlobal.getFocusData();
-                      $("#add_member_name").html(client.member_name);
+                      $("#add_member_name").text(client.member_name);
                       $("#add_member_class").val(client.member_class);
                       $("#add_member_code").val(client.member_code);
                       $("#add_subsystem_code").val(client.subsystem_code);
@@ -514,10 +514,10 @@
         opts.sDom = "t";
         opts.bFilter = false;
         opts.aoColumns = [
-            { "mData": "member_name", "sWidth": "40%" },
-            { "mData": "member_class", "sWidth": "15%"  },
-            { "mData": "member_code" },
-            { "mData": "subsystem_code" }
+            { "mData": "member_name", "sWidth": "40%", "mRender" : util.escape },
+            { "mData": "member_class", "sWidth": "15%", "mRender" : util.escape  },
+            { "mData": "member_code", "mRender" : util.escape },
+            { "mData": "subsystem_code", "mRender" : util.escape }
         ];
 
         oClientsGlobal = $("#clients_global").dataTable(opts);

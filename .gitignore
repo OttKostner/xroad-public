@@ -1,6 +1,6 @@
 .idea
-build
-out
+build/
+out/
 *.iml
 *.deb
 Gemfile.lock
@@ -15,12 +15,19 @@ legacy/lib/
 /lib/
 legacy/passwordstore/libpasswordstore.so
 packages/xroad-jetty9/jetty9/
-passwordstore/libpasswordstore.so
-packages/xroad-jetty9/jetty-distribution-*/
-proxy-ui/log/
 packages/*.changes
-proxy-ui/public/javascripts/translations.js
-proxy/log/
+passwordstore/libpasswordstore.so
+**/log/
+**/db/migrate/
+**/log/
+packages/xroad-jetty9/jetty-distribution-*
+**/public/javascripts/translations.js
+packages/*.changes
+BUILDROOT/
+RPMS/
+SRPMS/
+**/redhat/BUILD/
+packages/DEBIAN/
 *.rpm
 .vagrant/
 

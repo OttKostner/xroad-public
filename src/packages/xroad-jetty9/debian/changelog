@@ -1,3 +1,15 @@
+xroad-jetty9 (6.7.6-1) trusty; urgency=low
+
+  * version bump
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Tue, 27 Nov 2015 12:51:08 +0200
+
+xroad-jetty9 (6.7.5-1) trusty; urgency=low
+
+  * version bump
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Tue, 26 Nov 2015 15:43:01 +0200
+
 xroad-jetty9 (6.7.4-1) trusty; urgency=low
 
   * version bump

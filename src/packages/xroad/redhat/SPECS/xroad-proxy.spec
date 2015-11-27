@@ -127,6 +127,16 @@ rm -rf %{buildroot}
 %doc /usr/share/doc/%{name}/LICENSE.info
 
 %pre
+if [ $1 -gt 1 ] ; then
+    # upgrade
+    # remove the previous port forwarding rules (if any)
+    if [ -e /etc/sysconfig/xroad-proxy ]; then
+        source /etc/sysconfig/xroad-proxy
+    fi
+    if [ -x /usr/share/xroad/scripts/xroad-proxy-port-redirect.sh ]; then
+        /usr/share/xroad/scripts/xroad-proxy-port-redirect.sh disable
+    fi
+fi
 
 %post
 %systemd_post xroad-proxy.service
@@ -134,9 +144,23 @@ rm -rf %{buildroot}
 %systemd_post xroad-confclient.service
 
 if [ $1 -eq 1 ] ; then
-# Initial installation
-/usr/share/xroad/scripts/xroad-initdb.sh
+    # Initial installation
+    /usr/share/xroad/scripts/xroad-initdb.sh
+    if ! grep -qs DISABLE_PORT_REDIRECT /etc/sysconfig/xroad-proxy; then
+    cat <<"EOF" >>/etc/sysconfig/xroad-proxy
+# Setting DISABLE_PORT_REDIRECT to false enables iptables port redirection (default: disabled)
+# DISABLE_PORT_REDIRECT=true
+EOF
+    fi
 fi
+
+if [ $1 -gt 1 ] ; then
+    # upgrade
+    if [ ! -e /etc/sysconfig/xroad-proxy ]; then
+        echo 'DISABLE_PORT_REDIRECT=false' >>/etc/sysconfig/xroad-proxy
+    fi
+fi
+
 sh /usr/share/xroad/scripts/xroad-proxy-setup.sh
 
 %preun

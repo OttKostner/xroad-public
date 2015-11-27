@@ -268,7 +268,10 @@ en:
       internal_ssl_cert: "Internal TLS Certificate"
       internal_ssl_cert_hash: "Certificate hash (%{alg})"
       internal_ssl_generate_key: "Generate New TLS Key"
+      internal_ssl_generate_csr: "Generate Certificate Request"
       generate_internal_ssl_confirm: "Generate new internal TLS key and certificate?"
+      distinguished_name: "Distinguished name"
+      import_certificate: "Import certificate"
     tsp_add_dialog:
       add_tsp: "Add Timestamping Service"
       approved_tsp: "Trusted Timestamping Services"
@@ -281,4 +284,4 @@ en:
     title: "Configuration Anchor"
     import_title: "Import Configuration Anchor"
     upload_title: "Upload Configuration Anchor"
-    upload_confirm: "Configuration anchor details: {{details}} Continue with import?"
+    upload_confirm: "Configuration anchor details: <table style=\"margin: 1em 0px;\" class=\"details\"><tbody><tr><td class=\"semibold\">Hash ({{hash_algorithm}})</td><td>{{hash}}</td></tr><tr><td class=\"semibold\">Generated</td><td>{{generated_at}}</td></tr></tbody></table> Continue with import?"
