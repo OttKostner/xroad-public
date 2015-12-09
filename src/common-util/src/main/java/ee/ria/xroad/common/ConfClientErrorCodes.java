@@ -20,23 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package ee.ria.xroad.common.messagelog;
-
-import java.io.Serializable;
-
-import lombok.Value;
-
-import ee.ria.xroad.common.message.SoapMessageImpl;
-import ee.ria.xroad.common.signature.SignatureData;
+package ee.ria.xroad.common;
 
 /**
- * Message for logging the contained SOAP message and signature data.
+ * Configuration client error codes
  */
-@Value
-public class LogMessage {
+public class ConfClientErrorCodes {
 
-    private final SoapMessageImpl message;
-    private final SignatureData signature;
-    private final boolean clientSide;
+    public static final int RETURN_SUCCESS = 0;
+    public static final int ERROR_CODE_UNINITIALIZED = 126;
+    public static final int ERROR_CODE_INTERNAL = 125;
+    public static final int ERROR_CODE_INVALID_SIGNATURE_VALUE = 124;
+    public static final int ERROR_CODE_EXPIRED_CONF = 123;
+    public static final int ERROR_CODE_CANNOT_DOWNLOAD_CONF = 122;
+    public static final int ERROR_CODE_MISSING_PRIVATE_PARAMS = 121;
 
 }

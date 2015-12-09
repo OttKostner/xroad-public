@@ -24,15 +24,6 @@ package ee.ria.xroad.common;
 
 import ee.ria.xroad.common.util.CryptoUtils;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import ee.ria.xroad.common.identifier.ClientId;
-import ee.ria.xroad.common.util.CryptoUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 
 /**
  * Contains system-wide constants for system properties.
@@ -133,6 +124,10 @@ public final class SystemProperties {
     /** Property name of the ClientProxy HTTPS connector and ServerProxy HTTP client supported TLS cipher suites */
     private static final String PROXY_CLIENT_TLS_CIPHERS =
             PREFIX + "proxy.client-tls-ciphers";
+
+    private static final java.lang.String PROXY_ENFORCE_TOKEN_PIN_POLICY =
+            PREFIX + "proxy.enforce-token-pin-policy";
+
 
     // Signer -----------------------------------------------------------------
 
@@ -919,5 +914,9 @@ public final class SystemProperties {
                     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA";
     public static String[] getProxyClientTLSCipherSuites() {
         return System.getProperty(PROXY_CLIENT_TLS_CIPHERS, DEFAULT_CLIENT_SSL_CIPHER_SUITES).split(",");
+    }
+
+    public static boolean shouldEnforceTokenPinPolicy() {
+        return Boolean.valueOf(System.getProperty(PROXY_ENFORCE_TOKEN_PIN_POLICY, "false"));
     }
 }

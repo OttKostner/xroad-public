@@ -22,10 +22,15 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
+import ee.ria.xroad.common.ConfClientErrorCodes;
+import ee.ria.xroad.common.ConfClientStatus;
+import ee.ria.xroad.common.SystemProperties;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+
+import java.time.LocalTime;
 
 /**
  * Quartz job implementation for the configuration client.
@@ -36,13 +41,18 @@ public class ConfigurationClientJob implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         JobDataMap data = context.getJobDetail().getJobDataMap();
-
         Object client = data.get("client");
 
         if (client != null && client instanceof ConfigurationClient) {
             try {
                 ((ConfigurationClient) client).execute();
+                ConfClientStatus status = new ConfClientStatus(ConfClientErrorCodes.RETURN_SUCCESS, LocalTime.now(),
+                        LocalTime.now().plusSeconds(SystemProperties.getConfigurationClientUpdateIntervalSeconds()));
+                context.setResult(status);
             } catch (Exception e) {
+                ConfClientStatus status = new ConfClientStatus(ConfigurationClientUtils.getErrorCode(e), LocalTime.now(),
+                        LocalTime.now().plusSeconds(SystemProperties.getConfigurationClientUpdateIntervalSeconds()));
+                context.setResult(status);
                 throw new JobExecutionException(e);
             }
         } else {

@@ -23,6 +23,10 @@ subprojects {
     group = 'ee.ria.xroad'
     version = '1.0'
 
+    jacoco {
+        toolVersion = "0.7.5.201505241946"
+    }
+
     repositories {
         mavenCentral()
         mavenLocal()
@@ -60,7 +64,7 @@ subprojects {
     dependencies {
         testCompile 'junit:junit:4.11'
 
-        provided 'org.projectlombok:lombok:1.14.8'
+        provided 'org.projectlombok:lombok:1.16.6'
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {

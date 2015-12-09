@@ -265,7 +265,7 @@ public class ServerProxy implements StartStop {
             throws Exception {
         SslContextFactory cf = new SslContextFactory(false);
         cf.setNeedClientAuth(true);
-        cf.setIncludeCipherSuites(CryptoUtils.INCLUDED_CIPHER_SUITES);
+        cf.setIncludeCipherSuites(CryptoUtils.getINCLUDED_CIPHER_SUITES());
         cf.setSessionCachingEnabled(true);
         cf.setSslSessionTimeout(SSL_SESSION_TIMEOUT);
 

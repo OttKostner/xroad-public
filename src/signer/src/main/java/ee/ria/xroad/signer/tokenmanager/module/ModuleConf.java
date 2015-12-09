@@ -74,13 +74,9 @@ public final class ModuleConf {
                         new FileContentChangeChecker(getDeviceConfFile());
                 return true;
             }
-        } catch (Exception e) {
-            log.error("Failed to create content change checker", e);
-        }
-
-        try {
             return changeChecker != null ? changeChecker.hasChanged() : true;
         } catch (Exception e) {
+            log.error("Failed to create content change checker or calculate check sum", e);
             return true;
         }
     }
@@ -113,7 +109,7 @@ public final class ModuleConf {
             try {
                 parseSection(uid, conf.getSection(uid));
             } catch (ConversionException e) {
-                log.error(e.getMessage());
+                log.error("Parse section failed with {}", e);
             }
         }
     }
@@ -159,7 +155,7 @@ public final class ModuleConf {
         } catch (ConversionException e) {
             throw new ConversionException(String.format(
                     "Invalid value of '%s' for module (%s), skipping...",
-                    key, section.getSubnodeKey()));
+                    key, section.getSubnodeKey()), e);
         }
     }
 }

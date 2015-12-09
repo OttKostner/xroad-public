@@ -425,6 +425,17 @@
         });
     }
 
+    function initTestability() {
+        // add data-name attributes to improve testability
+        $("#wsdl_add_dialog").parent().attr("data-name", "wsdl_add_dialog");
+        $("#wsdl_params_dialog").parent().attr("data-name", "wsdl_params_dialog");
+        $("#service_params_dialog").parent().attr("data-name", "service_params_dialog");
+        $("#wsdl_disable_dialog").parent().attr("data-name", "wsdl_disable_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+        $("button span:contains('OK')").parent().attr("data-name", "ok");
+    }
+
     $(document).ready(function() {
         initWSDLAddDialog();
         initWSDLDisableDialog();
@@ -433,6 +444,7 @@
 
         initServicesTable();
         initClientServicesActions();
+        initTestability();
     });
 
     SERVICES.init = function() {

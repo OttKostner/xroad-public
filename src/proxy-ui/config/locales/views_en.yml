@@ -194,6 +194,14 @@ en:
       delete_selected_confirm: "Are you sure you want to remove the selected services: {{services}}"
       delete_all_confirm: "Are you sure you want to remove all services?"
 
+  diagnostics:
+    index:
+      global_configuration: "Global Configuration"
+      status: "Status"
+      message: "Message"
+      previous_update: "Previous Update"
+      next_update: "Next Update"
+
   init:
     index:
       heading: "Initial configuration"

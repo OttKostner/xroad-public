@@ -30,6 +30,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import ee.ria.xroad.common.CodedException;
@@ -50,7 +51,8 @@ public final class InternalSSLKey {
     public static final String CRT_FILE_NAME = "ssl/internal.crt";
     public static final String KEY_FILE_NAME = "ssl/internal.p12";
     public static final String KEY_ALIAS = "internal";
-    public static final char[] KEY_PASSWORD = "internal".toCharArray();
+    @Getter
+    private static final char[] KEY_PASSWORD = "internal".toCharArray();
 
     private final PrivateKey key;
     private final X509Certificate cert;

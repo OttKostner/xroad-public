@@ -1076,6 +1076,18 @@ function closeFileUploadDialog() {
     $("#file_upload_dialog").dialog("close");
 }
 
+function initTestability() {
+    // add data-name attributes to improve testability
+    $("#file_upload_dialog").parent().attr("data-name", "file_upload_dialog");
+    $("#locale_select_dialog").parent().attr("data-name", "locale_select_dialog");
+    $("button span:contains('Close')").parent().attr("data-name", "close");
+    $("button span:contains('OK')").parent().attr("data-name", "ok");
+    $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+    $("button span:contains('Yes')").parent().attr("data-name", "yes");
+    $("button span:contains('Confirm')").parent().attr("data-name", "confirm");
+}
+
+
 $(document).ready(function() {
 
     initMenu();
@@ -1130,6 +1142,7 @@ $(document).ready(function() {
 
     initFileUploadDialog();
     initLocaleSelectDialog();
+    initTestability();
 
     // Init every tooltip on page, even the ones added dynamically later.
     $(document).tooltip({

@@ -23,6 +23,7 @@
 package ee.ria.xroad.asicverifier;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -67,8 +68,7 @@ public final class AsicVerifierMain {
             verifyConfPathCorrectness();
         } catch (CodedException e) {
             System.err.println("Unable to load configuration: "
-                    + e.getFaultString());
-            System.exit(1);
+                    + e);
         }
     }
 
@@ -80,7 +80,7 @@ public final class AsicVerifierMain {
         GlobalConf.getInstanceIdentifier();
     }
 
-    private static void verifyAsic(String fileName) throws Exception {
+    private static void verifyAsic(String fileName) {
         out.println("Verifying ASiC container \"" + fileName + "\" ...");
 
         try {
@@ -90,18 +90,17 @@ public final class AsicVerifierMain {
             onVerificationSucceeded(verifier);
         } catch (Exception e) {
             onVerificationFailed(e);
-            System.exit(1);
         }
     }
 
     @SuppressWarnings("resource") //
     private static void onVerificationSucceeded(
-            AsicContainerVerifier verifier) throws Exception {
+            AsicContainerVerifier verifier) throws IOException {
         out.println(AsicUtils.buildSuccessOutput(verifier));
 
         out.print("\nWould you like to extract the signed files? (y/n) ");
 
-        if (new Scanner(System.in).nextLine().equalsIgnoreCase("y")) {
+        if ("y".equalsIgnoreCase(new Scanner(System.in).nextLine())) {
             AsicContainer asic = verifier.getAsic();
             writeToFile(AsicContainerEntries.ENTRY_MESSAGE, asic.getMessage());
 
@@ -113,8 +112,7 @@ public final class AsicVerifierMain {
         System.err.println(AsicUtils.buildFailureOutput(cause));
     }
 
-    private static void writeToFile(String fileName, String contents)
-            throws Exception {
+    private static void writeToFile(String fileName, String contents) throws IOException {
         try (FileOutputStream file = new FileOutputStream(fileName)) {
             file.write(contents.getBytes(StandardCharsets.UTF_8));
         }

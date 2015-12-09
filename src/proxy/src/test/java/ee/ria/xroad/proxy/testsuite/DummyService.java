@@ -104,7 +104,7 @@ class DummyService extends Server implements StartStop {
         SslContextFactory cf = new SslContextFactory(false);
         cf.setNeedClientAuth(true);
 
-        cf.setIncludeCipherSuites(CryptoUtils.INCLUDED_CIPHER_SUITES);
+        cf.setIncludeCipherSuites(CryptoUtils.getINCLUDED_CIPHER_SUITES());
         cf.setSessionCachingEnabled(true);
 
         SSLContext ctx = SSLContext.getInstance(CryptoUtils.SSL_PROTOCOL);

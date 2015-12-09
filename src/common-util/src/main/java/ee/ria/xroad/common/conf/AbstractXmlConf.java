@@ -41,6 +41,7 @@ import ee.ria.xroad.common.util.AtomicSave;
 import ee.ria.xroad.common.util.FileContentChangeChecker;
 import ee.ria.xroad.common.util.ResourceUtils;
 import ee.ria.xroad.common.util.SchemaValidator;
+import lombok.extern.slf4j.Slf4j;
 
 import static ee.ria.xroad.common.ErrorCodes.translateException;
 
@@ -54,6 +55,7 @@ import static ee.ria.xroad.common.ErrorCodes.translateException;
  *
  * @param <T> the generated configuration type
  */
+@Slf4j
 public abstract class AbstractXmlConf<T> implements ConfProvider {
 
     private final JAXBContext jaxbCtx;
@@ -198,9 +200,11 @@ public abstract class AbstractXmlConf<T> implements ConfProvider {
             try {
                 validateMethod.invoke(null, new StreamSource(in));
             } catch (InvocationTargetException e) {
+                log.warn("Validate schema failed: {},", e);
                 throw translateException(e.getCause());
             }
         } catch (NoSuchMethodException e) {
+            log.warn("SchemaValidator: {},", e);
             throw new RuntimeException("SchemaValidator '"
                     + schemaValidator.getName() + "' must implement static "
                         + "method 'void validate(Source)'");

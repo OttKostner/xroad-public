@@ -52,6 +52,15 @@ module BaseHelper
     end
   end
 
+  def menu_item_data(item)
+    if item.controller
+      s = url_for(:controller => item.controller)
+      s.sub! '/', ''
+    else
+      "#"
+    end
+  end
+
   def menu_item_class(item)
     :submenu if item.is_a?(SubMenu)
   end

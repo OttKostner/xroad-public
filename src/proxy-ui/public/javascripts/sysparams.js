@@ -251,6 +251,14 @@ function initDialogs() {
     });
 }
 
+function initTestability() {
+        // add data-name attributes to improve testability
+        $("#internal_ssl_generate_csr_dialog").parent().attr("data-name", "internal_ssl_generate_csr_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('OK')").parent().attr("data-name", "ok");
+}
+
+
 $(document).ready(function() {
     initTables();
     initAnchorActions();
@@ -259,4 +267,5 @@ $(document).ready(function() {
     initInternalSSLActions();
     initDialogs();
     populate();
+    initTestability();  
 });

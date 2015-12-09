@@ -183,11 +183,19 @@
             enableActions();
         });
     }
+    
+    function initTestability() {
+        // add data-name attributes to improve testability
+        $("#acl_subjects_search_dialog").parent().attr("data-name", "acl_subjects_search_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+    }
 
     $(document).ready(function() {
         initAclSubjectsSearchDialog();
         initAclSubjectsSearchTable();
         initAclSubjectsSearchActions();
+        initTestability();
     });
 
     ACL_SUBJECTS_SEARCH.openDialog = function(_unselectableAclSubjects, _onAdd) {

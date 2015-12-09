@@ -29,6 +29,7 @@ java_import Java::ee.ria.xroad.common.conf.serverconf.model.ClientType
 java_import Java::ee.ria.xroad.common.conf.serverconf.model.ServerConfType
 java_import Java::ee.ria.xroad.common.identifier.ClientId
 java_import Java::ee.ria.xroad.commonui.SignerProxy
+java_import Java::ee.ria.xroad.common.util.TokenPinPolicy
 
 class InitController < ApplicationController
 
@@ -187,6 +188,23 @@ class InitController < ApplicationController
         pin = Array.new
         params[:pin].bytes do |b|
           pin << b
+        end
+
+        if SystemProperties::should_enforce_token_pin_policy
+          description = TokenPinPolicy::describe(pin.to_java(:char))
+          if !description.valid?
+
+            if description.has_invalid_characters
+              raise  t('init.pin_not_ascii')
+            end
+
+            raise t('init.pin_weak', {
+                :min_length => description.min_length,
+                :length => description.length,
+                :min_character_class_count => description.min_character_class_count,
+                :character_class_count => description.character_classes.size
+            })
+          end
         end
 
         SignerProxy::initSoftwareToken(pin.to_java(:char))

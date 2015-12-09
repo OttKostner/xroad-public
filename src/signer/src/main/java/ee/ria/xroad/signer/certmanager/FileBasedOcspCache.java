@@ -174,7 +174,7 @@ public class FileBasedOcspCache extends OcspCache {
         try {
             Files.delete(file.toPath());
         } catch (Exception e) {
-            log.warn("Failed to delete {}: {}", file, e.getMessage());
+            log.warn("Failed to delete {}: {}", file, e);
         }
     }
 

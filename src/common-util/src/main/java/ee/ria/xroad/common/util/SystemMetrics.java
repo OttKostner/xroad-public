@@ -103,7 +103,7 @@ public final class SystemMetrics {
             long used = memoryStats.getHeapMemoryUsage().getUsed();
             return ((double) used) / max;
         } catch (InternalError err) {
-            log.error("Error getting heap usage: {}", err.getMessage());
+            log.error("Error getting heap usage: {}", err);
             return -1;
         }
     }
@@ -204,7 +204,7 @@ public final class SystemMetrics {
             return max - open;
         } catch (InternalError probablyOutOfFileHandles) {
             log.error("Error getting free file descriptor count: {}",
-                    probablyOutOfFileHandles.getMessage());
+                    probablyOutOfFileHandles);
             return -1;
         }
     }

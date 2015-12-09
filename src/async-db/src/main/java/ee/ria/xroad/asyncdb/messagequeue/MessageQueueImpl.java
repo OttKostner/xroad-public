@@ -372,6 +372,7 @@ public class MessageQueueImpl implements MessageQueue {
         try {
             return RequestInfo.fromJson(json);
         } catch (CorruptQueueException e) {
+            LOG.error("Load request failed: {}", e);
             return recoverFromRequestCorruption();
         }
     }
@@ -453,7 +454,7 @@ public class MessageQueueImpl implements MessageQueue {
                 dirCreated = new File(tempDirPath).mkdirs();
             } catch (Exception e) {
                 LOG.warn("Could not create temp directory, reason: '{}'",
-                        e.getMessage());
+                        e);
             }
         }
         return tempDirPath;

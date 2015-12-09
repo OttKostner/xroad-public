@@ -168,7 +168,7 @@ class AntiDosConnectionManager<T extends SocketChannelWrapper> {
         try {
             return SystemMetrics.getStats().getSystemCpuLoad();
         } catch (InternalError err) {
-            log.error("Error getting cpu load: {}", err.getMessage());
+            log.error("Error getting cpu load: {}", err);
             return -1;
         }
     }

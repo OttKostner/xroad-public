@@ -510,6 +510,18 @@
         });
     }
 
+    function initTestability() {
+        // add data-name attributes to improve testability
+        $("#group_add_dialog").parent().attr("data-name", "group_add_dialog");
+        $("#group_details_dialog").parent().attr("data-name", "group_details_dialog");
+        $("#group_description_edit_dialog").parent().attr("data-name", "group_description_edit_dialog");
+        $("#group_members_add_dialog").parent().attr("data-name", "group_members_add_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+        $("button span:contains('OK')").parent().attr("data-name", "ok");
+    }
+    
+    
     $(document).ready(function() {
         initGroupsTable();
         initGroupMembersTable();
@@ -519,6 +531,7 @@
         initGroupDetailsDialog();
         initGroupDescriptionEditDialog();
         initGroupMembersAddDialog();
+        initTestability();
     });
 
     LOCAL_GROUPS.init = function() {

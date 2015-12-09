@@ -31,6 +31,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -48,15 +51,35 @@ import static javax.servlet.http.HttpServletResponse.*;
 public class AdminPort implements StartStop {
 
     /**
+     * Jetty HTTP request handler parameters
+     */
+    @AllArgsConstructor
+    public static class JettyHandlerParams {
+        public final String target;
+        public final Request baseRequest;
+        public final HttpServletRequest request;
+        public HttpServletResponse response;
+    }
+
+    /**
+     * Base class for AdminPort callbacks
+     */
+    @Getter
+    @Setter
+    public static abstract class AdminPortCallback implements Runnable {
+        private JettyHandlerParams params;
+    }
+
+    /**
      * Asynchronous AdminPort callback interface.
      */
-    public interface AsynchronousCallback extends Runnable {
+    public static abstract class AsynchronousCallback extends AdminPortCallback {
     }
 
     /**
      * Synchronous AdminPort callback interface.
      */
-    public interface SynchronousCallback extends Runnable {
+    public static abstract class SynchronousCallback extends AdminPortCallback {
     }
 
     public static final String REQUEST_STOP = "/stop";
@@ -69,7 +92,7 @@ public class AdminPort implements StartStop {
 
     private final Server server = new Server();
 
-    private final Map<String, Runnable> handlers = new HashMap<>();
+    private final Map<String, AdminPortCallback> handlers = new HashMap<>();
 
     /**
      * Constructs an AdminPort instance that listens for commands on the given port number.
@@ -162,7 +185,8 @@ public class AdminPort implements StartStop {
 
             LOG.info("Admin request: {}", target);
             try {
-                Runnable handler = handlers.get(target);
+                AdminPortCallback handler = handlers.get(target);
+                handler.setParams(new JettyHandlerParams(target, baseRequest, request, response));
                 if (handler != null) {
                     if (handler instanceof SynchronousCallback) {
                         handler.run();

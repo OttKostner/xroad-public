@@ -375,6 +375,7 @@
                 var li = $('<li/>')
                     .attr('data-tab', action)
                     .attr('data-id', actions[action].id)
+                    .attr('data-name', actions[action].id)
                     .attr('title', actions[action].title)
                     .append($('<i/>').addClass('fa fa-' + actions[action].icon));
                 ul.append(li);
@@ -543,6 +544,14 @@
         oClientCerts = $("#certificates").dataTable(opts);
     }
 
+    function initTestability() {
+        // add data-name attributes to improve testability
+        $("#client_details_dialog").parent().attr("data-name", "client_details_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+        $("button span:contains('OK')").parent().attr("data-name", "ok");
+    }
+
     $(document).ready(function() {
         initClientAddDialog();
         initClientSelectDialog();
@@ -587,6 +596,8 @@
         $("#client_delete").live('click', function() {
             confirmDelete("clients.client_details_tab.delete_client_confirm");
         });
+
+        initTestability();
     });
 
     CLIENTS.getClientId = function() {

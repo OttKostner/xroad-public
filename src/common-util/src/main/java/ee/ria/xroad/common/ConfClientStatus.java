@@ -20,23 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package ee.ria.xroad.common.messagelog;
+package ee.ria.xroad.common;
+
+import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
-
-import lombok.Value;
-
-import ee.ria.xroad.common.message.SoapMessageImpl;
-import ee.ria.xroad.common.signature.SignatureData;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 /**
- * Message for logging the contained SOAP message and signature data.
+ * Holds configuration client status information
  */
-@Value
-public class LogMessage {
-
-    private final SoapMessageImpl message;
-    private final SignatureData signature;
-    private final boolean clientSide;
-
+@Getter
+@ToString
+public class ConfClientStatus implements Serializable {
+    private static final FormatStyle FORMAT_STYLE = FormatStyle.SHORT;
+    private int returnCode;
+    private LocalTime prevUpdate;
+    private LocalTime nextUpdate;
+    public ConfClientStatus(int returnCode, LocalTime prevUpdate, LocalTime nextUpdate) {
+        this.returnCode = returnCode;
+        this.prevUpdate = prevUpdate;
+        this.nextUpdate = nextUpdate;
+    }
+    public String getFormattedPrevUpdate() {
+        return getFormattedLocalTime(prevUpdate);
+    }
+    public String getFormattedNextUpdate() {
+        return getFormattedLocalTime(nextUpdate);
+    }
+    private String getFormattedLocalTime(LocalTime time) {
+        return time.format(DateTimeFormatter.ofLocalizedTime(FORMAT_STYLE));
+    }
 }

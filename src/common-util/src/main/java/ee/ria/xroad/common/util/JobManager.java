@@ -22,6 +22,7 @@
  */
 package ee.ria.xroad.common.util;
 
+import lombok.Getter;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -47,6 +48,7 @@ public class JobManager implements StartStop {
 
     private static final String DEFAULT_JOB_GROUP = "jobs";
 
+    @Getter
     private Scheduler jobScheduler;
 
     /**

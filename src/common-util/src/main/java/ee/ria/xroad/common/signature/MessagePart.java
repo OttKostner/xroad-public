@@ -22,16 +22,17 @@
  */
 package ee.ria.xroad.common.signature;
 
+import ee.ria.xroad.common.util.CryptoUtils;
 import lombok.Data;
 
-import ee.ria.xroad.common.util.CryptoUtils;
+import java.io.Serializable;
 
 
 /**
  * Encapsulates part of the input that will be added to the signature.
  */
 @Data
-public final class MessagePart {
+public final class MessagePart implements Serializable {
 
     /** Holds the name of the part. */
     private final String name;

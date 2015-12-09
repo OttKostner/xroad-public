@@ -58,7 +58,7 @@ final class CachedSigningInfoImpl extends AbstractCachedInfo {
             return true;
         } catch (Exception e) {
             log.warn("Cached signing info for member '{}' "
-                    + "failed verification: {}", clientId, e.getMessage());
+                    + "failed verification: {}", clientId, e);
             return false;
         }
     }

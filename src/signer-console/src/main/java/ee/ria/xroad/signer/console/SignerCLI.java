@@ -41,6 +41,7 @@ import asg.cliche.Param;
 import asg.cliche.Shell;
 import asg.cliche.ShellFactory;
 import com.typesafe.config.ConfigFactory;
+import ee.ria.xroad.common.util.TokenPinPolicy;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;

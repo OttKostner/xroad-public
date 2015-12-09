@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.xml.transform.dom.DOMSource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.xml.security.signature.Manifest;
 import org.apache.xml.security.signature.MissingResourceFailureException;
 import org.apache.xml.security.signature.XMLSignature;
@@ -65,6 +66,7 @@ import static ee.ria.xroad.common.util.MessageFileNames.SIG_HASH_CHAIN_RESULT;
  * Encapsulates the AsiC XAdES signature profile. This class verifies the
  * signature used in signing messages.
  */
+@Slf4j
 public class SignatureVerifier {
 
     /** The signature object. */
@@ -308,6 +310,7 @@ public class SignatureVerifier {
                                     + manifest.getId());
                 }
             } catch (MissingResourceFailureException e) {
+                log.warn("Could not find resource: {}", e);
                 throw new CodedException(X_INVALID_REFERENCE,
                         "Could not find " + e.getReference().getURI());
             }

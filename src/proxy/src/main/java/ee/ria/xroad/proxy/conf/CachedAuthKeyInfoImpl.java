@@ -57,7 +57,7 @@ class CachedAuthKeyInfoImpl extends AbstractCachedInfo {
             return true;
         } catch (Exception e) {
             log.warn("Cached authentication info failed verification: {}",
-                    e.getMessage());
+                    e);
             return false;
         }
     }

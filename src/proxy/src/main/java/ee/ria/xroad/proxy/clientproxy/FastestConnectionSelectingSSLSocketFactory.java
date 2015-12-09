@@ -217,8 +217,9 @@ class FastestConnectionSelectingSSLSocketFactory
             URI sslHost = (URI) session.getValue(ID_SELECTED_TARGET);
             return sslHost != null ? sslHost.equals(host) : false;
         } catch (Exception e) {
-            log.error("Error checking if host {} is in session ({})", host,
+            log.error("Error checking if host {} is in session ({}).", host,
                     session);
+            log.error("Exception :{}", e);
         }
 
         return false;

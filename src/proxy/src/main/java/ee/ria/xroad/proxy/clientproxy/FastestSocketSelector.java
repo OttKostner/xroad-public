@@ -117,7 +117,7 @@ class FastestSocketSelector {
                         closeQuietly(channel);
 
                         log.trace("Error connecting socket channel: {}",
-                                e.getMessage());
+                                e);
                     }
                 }
 

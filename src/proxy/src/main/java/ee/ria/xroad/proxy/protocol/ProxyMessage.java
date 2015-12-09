@@ -121,7 +121,7 @@ public class ProxyMessage implements ProxyMessageConsumer {
             try {
                 getSoapContent().close();
             } catch (Exception ignored) {
-                log.warn("Error closing SOAP content input stream");
+                log.warn("Error closing SOAP content input stream: {}", ignored);
             }
         }
     }

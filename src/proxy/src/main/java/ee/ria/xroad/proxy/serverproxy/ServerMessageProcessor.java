@@ -353,6 +353,7 @@ class ServerMessageProcessor extends MessageProcessorBase {
         try {
             uri = new URI(serviceAddress);
         } catch (URISyntaxException e) {
+            log.error("Malformed service address:{}", e);
             throw new CodedException(X_SERVICE_MALFORMED_URL,
                     "Malformed service address '%s': %s", serviceAddress,
                     e.getMessage());

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ee.ria.xroad.common.SystemProperties;
+import ee.ria.xroad.common.util.TokenPinPolicy;
 import lombok.extern.slf4j.Slf4j;
 
 import ee.ria.xroad.common.CodedException;
@@ -50,6 +51,7 @@ import ee.ria.xroad.signer.util.SignerUtil;
 
 import static ee.ria.xroad.common.ErrorCodes.X_INTERNAL_ERROR;
 import static ee.ria.xroad.common.ErrorCodes.X_PIN_INCORRECT;
+import static ee.ria.xroad.common.ErrorCodes.X_TOKEN_PIN_POLICY_FAILURE;
 import static ee.ria.xroad.common.util.CryptoUtils.encodeBase64;
 import static ee.ria.xroad.signer.tokenmanager.TokenManager.*;
 import static ee.ria.xroad.signer.tokenmanager.token.SoftwareTokenUtil.*;
@@ -262,6 +264,10 @@ public class SoftwareTokenWorker extends AbstractTokenWorker {
         verifyPinProvided(pin);
 
         log.info("Initializing software token with new pin...");
+
+        if ( SystemProperties.shouldEnforceTokenPinPolicy() && !TokenPinPolicy.validate(pin) ) {
+            throw new CodedException(X_TOKEN_PIN_POLICY_FAILURE, "Token PIN does not meet complexity requirements");
+        }
 
         java.security.KeyPair kp =
                 generateKeyPair(SystemProperties.getSignerKeyLength());

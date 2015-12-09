@@ -42,7 +42,9 @@ module ApplicationHelper
         MenuItem.new(t('menu.management.keys'),
           :keys, :view_keys),
         MenuItem.new(t('menu.management.backup_and_restore'),
-          :backup, :backup_configuration)
+          :backup, :backup_configuration),
+        MenuItem.new(t('menu.management.diagnostics'),
+          :diagnostics)
       ])
 
     help_submenu =

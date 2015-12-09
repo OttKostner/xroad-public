@@ -36,7 +36,7 @@ import org.bouncycastle.cert.ocsp.OCSPResp;
  */
 @Value
 @ToString(exclude = { "signingCert", "extraCertificates", "ocspResponses" })
-public final class SigningRequest implements Serializable {
+public final class SigningRequest {
 
     private final X509Certificate signingCert;
 

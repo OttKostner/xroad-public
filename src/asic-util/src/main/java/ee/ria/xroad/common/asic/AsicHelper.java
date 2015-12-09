@@ -60,7 +60,7 @@ public final class AsicHelper {
 
         ZipEntry zipEntry;
         while ((zipEntry = zip.getNextEntry()) != null) {
-            for (Object expectedEntry : AsicContainerEntries.ALL_ENTRIES) {
+            for (Object expectedEntry : AsicContainerEntries.getALL_ENTRIES()) {
                 if (matches(expectedEntry, zipEntry.getName())) {
                     String data;
                     if (ENTRY_TIMESTAMP.equalsIgnoreCase(zipEntry.getName())) {
@@ -82,7 +82,7 @@ public final class AsicHelper {
             throws Exception {
         zip.setComment("mimetype=" + MIMETYPE);
 
-        for (Object expectedEntry : AsicContainerEntries.ALL_ENTRIES) {
+        for (Object expectedEntry : AsicContainerEntries.getALL_ENTRIES()) {
             String name = null;
             if (expectedEntry instanceof String) {
                 name = (String) expectedEntry;

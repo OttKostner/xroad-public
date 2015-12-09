@@ -173,7 +173,7 @@ public final class ErrorCodes {
     public static final String X_LOGOUT_FAILED = "LogoutFailed";
     public static final String X_PIN_INCORRECT = "PinIncorrect";
     public static final String X_CERT_IMPORT_FAILED = "CertImportFailed";
-
+    public static final String X_TOKEN_PIN_POLICY_FAILURE = "TokenPinPolicyFailure";
 
     // SecureLog errors
 

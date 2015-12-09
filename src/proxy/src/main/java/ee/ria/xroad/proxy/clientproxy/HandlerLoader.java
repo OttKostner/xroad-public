@@ -51,7 +51,7 @@ final class HandlerLoader {
             return constructor.newInstance(client);
         } catch (NoSuchMethodException e) {
             throw new Exception("Handler must have constructor taking "
-                    + "1 parameter (" + HttpClient.class + ")");
+                    + "1 parameter (" + HttpClient.class + ")", e);
         }
     }
 

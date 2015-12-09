@@ -25,6 +25,7 @@ package ee.ria.xroad.common.asic;
 import java.util.regex.Pattern;
 
 import ee.ria.xroad.common.util.MessageFileNames;
+import lombok.Getter;
 
 import static ee.ria.xroad.common.asic.AsicHelper.stripSlash;
 
@@ -83,7 +84,8 @@ public final class AsicContainerEntries {
     static final Pattern ENTRY_SIGNATURE_PATTERN =
             Pattern.compile("META-INF/.*signatures.*\\.xml");
 
-    static final Object[] ALL_ENTRIES = {
+    @Getter
+    private static final Object[] ALL_ENTRIES = {
         ENTRY_MIMETYPE,
         ENTRY_MESSAGE,
         ENTRY_SIGNATURE_PATTERN,

@@ -25,6 +25,7 @@ package ee.ria.xroad.asyncdb.messagequeue;
 import java.util.Date;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.time.DateUtils;
@@ -38,6 +39,7 @@ import ee.ria.xroad.common.identifier.ClientId;
 /**
  * Encapsulates data specific to message queue generally
  */
+@Slf4j
 public class QueueInfo implements Cloneable {
     private static final int NEXT_ATTEMPT_POWER_LIMIT = 30;
 
@@ -292,6 +294,7 @@ public class QueueInfo implements Cloneable {
         try {
             rawQueue = (JsonObject) new JsonParser().parse(json);
         } catch (ClassCastException e) {
+            log.error("Json string cannot be parsed: {}", e);
             throw new CorruptQueueException("Json string '" + json
                     + "' cannot be parsed into QueueInfo.");
         }

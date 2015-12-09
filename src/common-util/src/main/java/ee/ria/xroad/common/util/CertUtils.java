@@ -357,10 +357,10 @@ public final class CertUtils {
         Certificate[] outChain = { cert };
 
         KeyStore outStore = KeyStore.getInstance("PKCS12");
-        outStore.load(null, InternalSSLKey.KEY_PASSWORD);
-        outStore.setKeyEntry(InternalSSLKey.KEY_ALIAS, privateKey, InternalSSLKey.KEY_PASSWORD, outChain);
+        outStore.load(null, InternalSSLKey.getKEY_PASSWORD());
+        outStore.setKeyEntry(InternalSSLKey.KEY_ALIAS, privateKey, InternalSSLKey.getKEY_PASSWORD(), outChain);
         try (OutputStream outputStream = new FileOutputStream(filenameP12)) {
-            outStore.store(outputStream, InternalSSLKey.KEY_PASSWORD);
+            outStore.store(outputStream, InternalSSLKey.getKEY_PASSWORD());
             outputStream.flush();
         }
     }

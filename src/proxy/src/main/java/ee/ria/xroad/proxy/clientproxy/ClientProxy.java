@@ -159,7 +159,7 @@ public class ClientProxy implements StartStop {
                 new TrustManager[] {new AuthTrustManager()},
                 new SecureRandom());
         return new FastestConnectionSelectingSSLSocketFactory(ctx,
-                CryptoUtils.INCLUDED_CIPHER_SUITES);
+                CryptoUtils.getINCLUDED_CIPHER_SUITES());
     }
 
     private void createConnectors() throws Exception {

@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.util.MultiPartOutputStream;
 
 import ee.ria.xroad.common.CodedException;
@@ -47,6 +48,7 @@ import static ee.ria.xroad.common.ErrorCodes.*;
 import static ee.ria.xroad.common.util.CryptoUtils.*;
 import static ee.ria.xroad.common.util.MimeUtils.*;
 
+@Slf4j
 class AuthCertRegRequest implements ManagementRequest {
 
     private static final String SIG_AGLO_ID = SHA512WITHRSA_ID;
@@ -104,6 +106,7 @@ class AuthCertRegRequest implements ManagementRequest {
         try {
             readCertificate(authCert).checkValidity();
         } catch (Exception e) {
+            log.warn("Authentication certificate is invalid: {}", e);
             throw new CodedException(X_CERT_VALIDATION,
                     "Authentication certificate is invalid: %s",
                     e.getMessage());

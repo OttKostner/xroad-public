@@ -202,11 +202,23 @@
         });
     }
 
+    function initTestability() {
+        // add data-name attributes to improve testability
+        $("#service_acl_dialog").parent().attr("data-name", "service_acl_dialog");
+        $("button span:contains('Close')").parent().attr("data-name", "close");
+        $("button span:contains('Cancel')").parent().attr("data-name", "cancel");
+        $("button span:contains('OK')").parent().attr("data-name", "ok");
+        $("button span:contains('Add Subjects')").parent().attr("data-name", "add_subjects");
+        $("button span:contains('Remove Selected')").parent().attr("data-name", "remove_selected");
+        $("button span:contains('Remove All')").parent().attr("data-name", "remove_all");
+    }
+
     $(document).ready(function() {
         initServiceAclDialog();
         initServiceAclSubjectsTable();
         initServiceAclActions();
         enableActions();
+        initTestability();
     });
 
     ACL.openDialog = function(serviceCode) {

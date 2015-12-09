@@ -321,6 +321,7 @@ public final class WSDLParser {
                         StandardCharsets.UTF_8.name(),
                         new ByteArrayInputStream(response));
             } catch (Exception e) {
+                log.info("Exception while parsing: {}", e);
                 // Ignore exceptions, since the response might have
                 // been a valid WSDL, which SoapParser cannot parse.
                 return;

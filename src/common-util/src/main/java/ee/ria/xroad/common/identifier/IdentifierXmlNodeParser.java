@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -37,6 +38,7 @@ import static ee.ria.xroad.common.ErrorCodes.X_INVALID_XML;
 /**
  * XML node parser for X-Road identifiers.
  */
+@Slf4j
 public final class IdentifierXmlNodeParser {
 
     public static final String NS_IDENTIFIERS =
@@ -126,6 +128,7 @@ public final class IdentifierXmlNodeParser {
         try {
             return XroadObjectType.valueOf(typeName);
         } catch (IllegalArgumentException e) {
+            log.error("Unknown objectType: {}", e);
             throw new CodedException(X_INVALID_XML,
                     "Unknown objectType: %s", typeName);
         }

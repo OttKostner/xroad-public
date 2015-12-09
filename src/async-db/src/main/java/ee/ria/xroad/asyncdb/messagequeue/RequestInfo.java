@@ -27,6 +27,7 @@ import java.util.Date;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -38,6 +39,7 @@ import ee.ria.xroad.common.message.SoapMessageImpl;
 /**
  * Encapsulates data specific to single request.
  */
+@Slf4j
 public class RequestInfo implements Cloneable {
 
     @Getter
@@ -193,6 +195,7 @@ public class RequestInfo implements Cloneable {
         try {
             rawRequest = (JsonObject) new JsonParser().parse(json);
         } catch (ClassCastException e) {
+            log.error("Json string cannot be parsed: {}", e);
             throw new CorruptQueueException("Json string '" + json
                     + "' cannot be parsed into RequestInfo.");
         }

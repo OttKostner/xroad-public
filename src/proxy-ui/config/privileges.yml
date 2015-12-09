@@ -77,4 +77,5 @@
 -     export_internal_ssl_cert: [xroad-security-officer, xroad-system-administrator]
 -     generate_internal_ssl: [xroad-security-officer, xroad-system-administrator]
 - backup_configuration: [xroad-system-administrator]
+- diagnostics: [xroad-system-administrator]
 - restore_configuration: [xroad-system-administrator]

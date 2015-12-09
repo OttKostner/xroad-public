@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.7.7 - 2015-12-09
+- Fixed critical errors found by SonarQube
+- Added option for requiring strong password for PIN-code
+- Security server offers diagnostics information for global configuration fetching
+- Taken to use HTML-attribute data-name to improve testability
+
 ## 6.7.6 - 2015-11-27
 - Fixed changing of security server configuration anchor
 
