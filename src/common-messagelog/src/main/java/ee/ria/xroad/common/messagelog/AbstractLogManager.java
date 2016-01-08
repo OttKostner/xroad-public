@@ -22,18 +22,26 @@
  */
 package ee.ria.xroad.common.messagelog;
 
-import java.util.Date;
-
 import akka.actor.UntypedActor;
-
+import ee.ria.xroad.common.DiagnosticsErrorCodes;
+import ee.ria.xroad.common.DiagnosticsStatus;
+import ee.ria.xroad.common.DiagnosticsUtils;
 import ee.ria.xroad.common.message.SoapMessageImpl;
 import ee.ria.xroad.common.signature.SignatureData;
 import ee.ria.xroad.common.util.JobManager;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Date;
 
 /**
  * Base class for log manager actors.
  */
+@Slf4j
 public abstract class AbstractLogManager extends UntypedActor {
+
+    @Getter
+    protected static DiagnosticsStatus status = new DiagnosticsStatus(DiagnosticsErrorCodes.ERROR_CODE_TIMESTAMP_UNINITIALIZED, null);
 
     protected AbstractLogManager(JobManager jobManager) {
         if (jobManager == null) {
@@ -54,9 +62,17 @@ public abstract class AbstractLogManager extends UntypedActor {
                         f.getStartTime(), f.getEndTime());
                 getSender().tell(result, getSelf());
             } else if (message instanceof TimestampMessage) {
-                TimestampMessage m = (TimestampMessage) message;
-                TimestampRecord result = timestamp(m.getMessageRecordId());
-                getSender().tell(result, getSelf());
+                try {
+                    TimestampMessage m = (TimestampMessage) message;
+                    TimestampRecord result = timestamp(m.getMessageRecordId());
+                    status.setReturnCodeNow(DiagnosticsErrorCodes.RETURN_SUCCESS);
+                    getSender().tell(result, getSelf());
+                } catch (Exception e) {
+                    log.info("Timestamp failed: {}", e);
+                    status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
+                    getSender().tell(e, getSelf());
+                }
+
             } else {
                 unhandled(message);
             }

@@ -1,5 +1,10 @@
 # Change Log
 
+## 6.7.8 - 2016-01-07
+- Security server offers diagnostics information for time stamping service
+- Fixed configuration restore (RHEL)
+- Fixed database backup to support generated passwords
+
 ## 6.7.7 - 2015-12-09
 - Fixed critical errors found by SonarQube
 - Added option for requiring strong password for PIN-code

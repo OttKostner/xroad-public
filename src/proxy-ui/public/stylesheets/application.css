@@ -62,10 +62,10 @@
   color: #ff412c;
   text-shadow: 0 0 3px rgba(255, 65, 44, 0.8); }
 .diagnostics_col_status {
-  min-width: 50px; }
+  width: 100px; }
 .diagnostics_col_message {
   min-width: 50px; }
 .diagnostics_col_prev_update {
-  min-width: 50px; }
+  width: 150px; }
 .diagnostics_col_next_update {
-  min-width: 50px; }
+  width: 150px; }

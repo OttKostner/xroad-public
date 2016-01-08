@@ -22,8 +22,8 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
-import ee.ria.xroad.common.ConfClientErrorCodes;
-import ee.ria.xroad.common.ConfClientStatus;
+import ee.ria.xroad.common.DiagnosticsErrorCodes;
+import ee.ria.xroad.common.DiagnosticsStatus;
 import ee.ria.xroad.common.SystemProperties;
 import ee.ria.xroad.common.SystemPropertiesLoader;
 import ee.ria.xroad.common.util.AdminPort;
@@ -45,8 +45,8 @@ import java.time.LocalTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static ee.ria.xroad.common.ConfClientErrorCodes.ERROR_CODE_MISSING_PRIVATE_PARAMS;
-import static ee.ria.xroad.common.ConfClientErrorCodes.RETURN_SUCCESS;
+import static ee.ria.xroad.common.DiagnosticsErrorCodes.ERROR_CODE_MISSING_PRIVATE_PARAMS;
+import static ee.ria.xroad.common.DiagnosticsErrorCodes.RETURN_SUCCESS;
 import static ee.ria.xroad.common.ErrorCodes.translateException;
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_PROXY;
 import static ee.ria.xroad.common.conf.globalconf.PrivateParameters.CONTENT_ID_PRIVATE_PARAMETERS;
@@ -341,18 +341,18 @@ public final class ConfigurationClientMain {
         public static final String LISTENER_NAME = "confClientJobListener";
 
         // access only via synchronized getter/setter
-        private static ConfClientStatus status;
+        private static DiagnosticsStatus status;
 
         static {
-            status = new ConfClientStatus(ConfClientErrorCodes.ERROR_CODE_UNINITIALIZED, LocalTime.now(),
+            status = new DiagnosticsStatus(DiagnosticsErrorCodes.ERROR_CODE_UNINITIALIZED, LocalTime.now(),
                     LocalTime.now().plusSeconds(SystemProperties.getConfigurationClientUpdateIntervalSeconds()));
         }
 
-        private static synchronized void setStatus(ConfClientStatus newStatus) {
+        private static synchronized void setStatus(DiagnosticsStatus newStatus) {
             status = newStatus;
         }
 
-        private static synchronized ConfClientStatus getStatus() {
+        private static synchronized DiagnosticsStatus getStatus() {
             return status;
         }
 
@@ -374,7 +374,7 @@ public final class ConfigurationClientMain {
         @Override
         public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
             log.info("job was executed result={}", context.getResult());
-            setStatus((ConfClientStatus) context.getResult());
+            setStatus((DiagnosticsStatus) context.getResult());
         }
     }
 }

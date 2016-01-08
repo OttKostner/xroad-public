@@ -20,9 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package ee.ria.xroad.common.conf.globalconf;
+package ee.ria.xroad.common;
 
-import ee.ria.xroad.common.CodedException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeoutException;
 
 import static ee.ria.xroad.common.DiagnosticsErrorCodes.*;
 import static ee.ria.xroad.common.ErrorCodes.*;
@@ -30,7 +32,7 @@ import static ee.ria.xroad.common.ErrorCodes.*;
 /**
  * Utilities for configuration client module
  */
-public class ConfigurationClientUtils {
+public class DiagnosticsUtils {
 
     public static int getErrorCode(Exception e) {
         if (e instanceof CodedException) {
@@ -45,6 +47,10 @@ public class ConfigurationClientUtils {
                 default: // do nothing
                     break;
             }
+        } else if (e instanceof TimeoutException || e instanceof SocketTimeoutException) {
+            return ERROR_CODE_TIMESTAMP_REQUEST_TIMED_OUT;
+        } else if (e instanceof MalformedURLException) {
+            return ERROR_CODE_MALFORMED_TIMESTAMP_SERVER_URL;
         }
         return ERROR_CODE_INTERNAL;
     }

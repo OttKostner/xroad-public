@@ -22,36 +22,21 @@
  */
 package ee.ria.xroad.common;
 
-import lombok.Getter;
-import lombok.ToString;
-
-import java.io.Serializable;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-
 /**
- * Holds configuration client status information
+ * Configuration client error codes
  */
-@Getter
-@ToString
-public class ConfClientStatus implements Serializable {
-    private static final FormatStyle FORMAT_STYLE = FormatStyle.SHORT;
-    private int returnCode;
-    private LocalTime prevUpdate;
-    private LocalTime nextUpdate;
-    public ConfClientStatus(int returnCode, LocalTime prevUpdate, LocalTime nextUpdate) {
-        this.returnCode = returnCode;
-        this.prevUpdate = prevUpdate;
-        this.nextUpdate = nextUpdate;
-    }
-    public String getFormattedPrevUpdate() {
-        return getFormattedLocalTime(prevUpdate);
-    }
-    public String getFormattedNextUpdate() {
-        return getFormattedLocalTime(nextUpdate);
-    }
-    private String getFormattedLocalTime(LocalTime time) {
-        return time.format(DateTimeFormatter.ofLocalizedTime(FORMAT_STYLE));
-    }
+public class DiagnosticsErrorCodes {
+
+    public static final int RETURN_SUCCESS = 0;
+    public static final int ERROR_CODE_TIMESTAMP_UNINITIALIZED = 127;
+    public static final int ERROR_CODE_UNINITIALIZED = 126;
+    public static final int ERROR_CODE_INTERNAL = 125;
+    public static final int ERROR_CODE_INVALID_SIGNATURE_VALUE = 124;
+    public static final int ERROR_CODE_EXPIRED_CONF = 123;
+    public static final int ERROR_CODE_CANNOT_DOWNLOAD_CONF = 122;
+    public static final int ERROR_CODE_MISSING_PRIVATE_PARAMS = 121;
+    public static final int ERROR_CODE_TIMESTAMP_REQUEST_TIMED_OUT = 120;
+    public static final int ERROR_CODE_NO_NETWORK_CONNECTION = 119;
+    public static final int ERROR_CODE_MALFORMED_TIMESTAMP_SERVER_URL = 118;
+
 }

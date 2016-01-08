@@ -22,31 +22,36 @@
  */
 package ee.ria.xroad.proxy;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
+import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import com.typesafe.config.ConfigFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import ee.ria.xroad.common.PortNumbers;
-import ee.ria.xroad.common.SystemPropertiesLoader;
+import ee.ria.xroad.common.*;
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.conf.serverconf.ServerConf;
 import ee.ria.xroad.common.monitoring.MonitorAgent;
 import ee.ria.xroad.common.signature.BatchSigner;
-import ee.ria.xroad.common.util.AdminPort;
-import ee.ria.xroad.common.util.JobManager;
-import ee.ria.xroad.common.util.StartStop;
-import ee.ria.xroad.common.util.SystemMonitor;
+import ee.ria.xroad.common.util.*;
 import ee.ria.xroad.proxy.clientproxy.ClientProxy;
 import ee.ria.xroad.proxy.messagelog.MessageLog;
 import ee.ria.xroad.proxy.serverproxy.ServerProxy;
 import ee.ria.xroad.proxy.util.CertHashBasedOcspResponder;
 import ee.ria.xroad.signer.protocol.SignerClient;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import scala.concurrent.Await;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_PROXY;
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_SIGNER;
@@ -68,6 +73,7 @@ public final class ProxyMain {
         org.apache.xml.security.Init.init();
     }
 
+    private static final int CONNECTION_TIMEOUT_MS = 1200;
     private static final List<StartStop> SERVICES = new ArrayList<>();
 
     private static ActorSystem actorSystem;
@@ -195,7 +201,72 @@ public final class ProxyMain {
             }
         });
 
+        /**
+         * Diganostics for timestamping.
+         * First check the connection to timestamp server. If OK, check the status of the previous timestamp request.
+         * If the previous request has failed or connection cannot be made, DiagnosticsStatus tells the reason.
+         */
+        adminPort.addHandler("/timestampstatus", new AdminPort.SynchronousCallback() {
+            @Override
+            public void run() {
+                try {
+                    log.info("/timestampstatus");
+
+                    DiagnosticsStatus result = checkConnectionToTimestampUrl();
+                    log.info("result {}", result);
+
+                    ActorSelection logManagerSelection = actorSystem.actorSelection("/user/LogManager");
+
+                    Timeout timeout = new Timeout(CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    DiagnosticsStatus statusFromLogManager = (DiagnosticsStatus) Await.result(Patterns.ask(logManagerSelection, CommonMessages.TIMESTAMP_STATUS, timeout),
+                            timeout.duration());
+
+                    log.info("statusFromLogManager {}", statusFromLogManager);
+                    if (DiagnosticsErrorCodes.RETURN_SUCCESS != statusFromLogManager.getReturnCode() && DiagnosticsErrorCodes.ERROR_CODE_TIMESTAMP_UNINITIALIZED != statusFromLogManager.getReturnCode() && DiagnosticsErrorCodes.RETURN_SUCCESS != result.getReturnCode()) {
+                        result = statusFromLogManager;
+                        log.info("statusFromLogManager not success {}", statusFromLogManager);
+                    }
+
+                    JsonUtils.getSerializer().toJson(result, getParams().response.getWriter());
+
+                } catch (Exception e) {
+                    log.error("Error getting timeout status {}", e);
+                }
+            }
+        });
+
         return adminPort;
+    }
+
+    private static DiagnosticsStatus checkConnectionToTimestampUrl() {
+
+        DiagnosticsStatus status = null;
+        try {
+            for (String tspUrl: ServerConf.getTspUrl()) {
+                URL url = new URL(tspUrl);
+                log.info("Checking timestamp server status for url {}", url);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+                con.setDoOutput(true);
+                con.setDoInput(true);
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-type", "application/timestamp-query");
+                OutputStream out = con.getOutputStream();
+
+                if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    status = new DiagnosticsStatus(DiagnosticsErrorCodes.ERROR_CODE_NO_NETWORK_CONNECTION, LocalTime.now());
+                    log.warn("Timestamp status check failed {}", con.getErrorStream());
+                    log.warn("Received HTTP error: {} - {}", con.getResponseCode(), con.getResponseMessage());
+                } else {
+                    status = new DiagnosticsStatus(DiagnosticsErrorCodes.RETURN_SUCCESS, LocalTime.now());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Timestamp status check failed {}", e);
+            status = new DiagnosticsStatus(DiagnosticsUtils.getErrorCode(e), LocalTime.now());
+        }
+        return status;
+
     }
 
     private static void readProxyVersion() {

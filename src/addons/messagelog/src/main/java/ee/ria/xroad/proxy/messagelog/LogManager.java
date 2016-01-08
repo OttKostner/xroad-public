@@ -26,6 +26,9 @@ import akka.actor.*;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ee.ria.xroad.common.CodedException;
+import ee.ria.xroad.common.CommonMessages;
+import ee.ria.xroad.common.DiagnosticsErrorCodes;
+import ee.ria.xroad.common.DiagnosticsUtils;
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
 import ee.ria.xroad.common.conf.serverconf.ServerConf;
 import ee.ria.xroad.common.message.SoapMessageImpl;
@@ -61,6 +64,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public class LogManager extends AbstractLogManager {
 
+
+
     private static final Timeout TIMESTAMP_TIMEOUT =
             new Timeout(Duration.create(30, TimeUnit.SECONDS));
 
@@ -71,6 +76,8 @@ public class LogManager extends AbstractLogManager {
     static final String CLEANER_NAME = "RequestLogCleaner";
 
     private final LogRecordManager logRecordManager = new LogRecordManager();
+
+
 
     // Date at which a time-stamping first failed.
     private DateTime timestampFailed;
@@ -145,6 +152,22 @@ public class LogManager extends AbstractLogManager {
         return logRecordManager.getByQueryId(queryId, startTime, endTime);
     }
 
+    @Override
+    public void onReceive(Object message) throws Exception {
+        try {
+            log.info("MessageLog.onReceive({})", message);
+            if (message instanceof String && CommonMessages.TIMESTAMP_STATUS.equals(message)) {
+                getSender().tell(status, getSelf());
+            } else {
+                super.onReceive(message);
+            }
+        } catch (Exception e) {
+            getSender().tell(e, getSelf());
+        }
+    }
+
+
+
     // ------------------------------------------------------------------------
 
     protected Class<? extends TaskQueue> getTaskQueueImpl() {
@@ -167,17 +190,30 @@ public class LogManager extends AbstractLogManager {
             throws Exception {
         log.trace("timestampImmediately({})", logRecord);
 
-        Object result = Await.result(Patterns.ask(timestamper,
-                new Timestamper.TimestampTask(logRecord), TIMESTAMP_TIMEOUT),
-                TIMESTAMP_TIMEOUT.duration());
+        try {
 
-        if (result instanceof Timestamper.TimestampSucceeded) {
-            return saveTimestampRecord((Timestamper.TimestampSucceeded) result);
-        } else if (result instanceof Timestamper.TimestampFailed) {
-            throw ((Timestamper.TimestampFailed) result).getCause();
-        } else {
-            throw new RuntimeException(
-                    "Unexpected result from Timestamper: " + result.getClass());
+
+            Object result = Await.result(Patterns.ask(timestamper,
+                            new Timestamper.TimestampTask(logRecord), TIMESTAMP_TIMEOUT),
+                    TIMESTAMP_TIMEOUT.duration());
+
+
+            if (result instanceof Timestamper.TimestampSucceeded) {
+                status.setReturnCodeNow(DiagnosticsErrorCodes.RETURN_SUCCESS);
+                return saveTimestampRecord((Timestamper.TimestampSucceeded) result);
+            } else if (result instanceof Timestamper.TimestampFailed) {
+                Exception e = ((Timestamper.TimestampFailed) result).getCause();
+                log.info("Timestamp failed: {}", e);
+                status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
+                throw e;
+            } else {
+                status.setReturnCodeNow(DiagnosticsErrorCodes.ERROR_CODE_INTERNAL);
+                throw new RuntimeException(
+                        "Unexpected result from Timestamper: " + result.getClass());
+            }
+        } catch (Exception e) {
+            status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
+            throw e;
         }
     }
 

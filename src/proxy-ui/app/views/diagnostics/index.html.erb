@@ -42,10 +42,33 @@
           </thead>
           <tbody>
           <tr>
-            <td><i class="fa fa-circle <%= @statusClass %>"></i></td>
-            <td><%= @statusMessage %></td>
-            <td><%= @prevUpdate %></td>
-            <td><%= @nextUpdate %></td>
+            <td><i class="fa fa-circle <%= @globalConfStatusClass %>"></i></td>
+            <td><%= @globalConfStatusMessage %></td>
+            <td><%= @globalConfPrevUpdate %></td>
+            <td><%= @globalConfNextUpdate %></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box">
+        <div class="box-heading">
+          <span class="box-title"><%= t 'diagnostics.index.timestamping' %></span>
+        </div>
+
+        <table id="global_configuration" class="bordered">
+          <thead>
+          <th class="diagnostics_col_status"><%= t 'diagnostics.index.status' %></th>
+          <th class="diagnostics_col_message"><%= t 'diagnostics.index.message' %></th>
+          <th class="diagnostics_col_prev_update"><%= t 'diagnostics.index.previous_update' %></th>
+          <th class="diagnostics_col_next_update"><%= t 'diagnostics.index.next_update' %></th>
+          </thead>
+          <tbody>
+          <tr>
+            <td><i class="fa fa-circle <%= @timestamperStatusClass %>"></i></td>
+            <td><%= @timestamperStatusMessage %></td>
+            <td><%= @timestamperPrevUpdate %></td>
+            <td><%= @timestamperNextUpdate %></td>
           </tr>
           </tbody>
         </table>

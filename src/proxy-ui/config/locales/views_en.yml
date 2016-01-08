@@ -197,6 +197,7 @@ en:
   diagnostics:
     index:
       global_configuration: "Global Configuration"
+      timestamping: "Timestamping"
       status: "Status"
       message: "Message"
       previous_update: "Previous Update"

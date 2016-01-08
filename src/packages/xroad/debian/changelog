@@ -1,3 +1,10 @@
+xroad (6.7.8-1) trusty; urgency=low
+
+  * Security server offers diagnostics information for time stamping service
+  * Fixed database backup to support generated passwords
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Thu, 7 Jan 2016 14:00:01 +0300
+
 xroad (6.7.7-1) trusty; urgency=low
 
   * Fixed critical errors found by SonarQube

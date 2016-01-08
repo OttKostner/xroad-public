@@ -23,16 +23,8 @@
 package ee.ria.xroad.common;
 
 /**
- * Configuration client error codes
+ * Created by sjk on 12/11/15.
  */
-public class ConfClientErrorCodes {
-
-    public static final int RETURN_SUCCESS = 0;
-    public static final int ERROR_CODE_UNINITIALIZED = 126;
-    public static final int ERROR_CODE_INTERNAL = 125;
-    public static final int ERROR_CODE_INVALID_SIGNATURE_VALUE = 124;
-    public static final int ERROR_CODE_EXPIRED_CONF = 123;
-    public static final int ERROR_CODE_CANNOT_DOWNLOAD_CONF = 122;
-    public static final int ERROR_CODE_MISSING_PRIVATE_PARAMS = 121;
-
+public interface CommonMessages {
+    static final String TIMESTAMP_STATUS = "TimestampStatus";
 }
