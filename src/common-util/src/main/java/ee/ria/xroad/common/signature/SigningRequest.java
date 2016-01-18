@@ -22,14 +22,13 @@
  */
 package ee.ria.xroad.common.signature;
 
-import java.io.Serializable;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.ToString;
 import lombok.Value;
 import org.bouncycastle.cert.ocsp.OCSPResp;
+
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Encapsulates contents of a signing request.

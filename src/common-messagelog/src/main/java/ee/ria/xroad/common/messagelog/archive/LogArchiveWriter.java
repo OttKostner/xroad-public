@@ -58,8 +58,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 @Slf4j
 public class LogArchiveWriter implements Closeable {
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat("yyyyMMddHHmmss");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
     public static final int MAX_RANDOM_GEN_ATTEMPTS = 1000;
 
@@ -161,8 +160,8 @@ public class LogArchiveWriter implements Closeable {
 
     protected String getArchiveFilename(String random) {
         return String.format("mlog-%s-%s-%s.zip",
-                SIMPLE_DATE_FORMAT.format(logArchiveCache.getStartTime()),
-                SIMPLE_DATE_FORMAT.format(logArchiveCache.getEndTime()),
+                simpleDateFormat.format(logArchiveCache.getStartTime()),
+                simpleDateFormat.format(logArchiveCache.getEndTime()),
                 random);
     }
 

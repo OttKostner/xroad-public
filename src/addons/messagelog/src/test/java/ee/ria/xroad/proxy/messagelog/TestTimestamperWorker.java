@@ -22,21 +22,19 @@
  */
 package ee.ria.xroad.proxy.messagelog;
 
-import java.io.InputStream;
-import java.util.List;
-
+import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.signature.TimestampVerifier;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
 
-import ee.ria.xroad.common.conf.globalconf.GlobalConf;
-import ee.ria.xroad.common.signature.TimestampVerifier;
+import java.util.List;
 
 class TestTimestamperWorker extends TimestamperWorker {
 
     private static volatile Boolean shouldFail;
 
-    public TestTimestamperWorker(List<String> tspUrls) {
+    TestTimestamperWorker(List<String> tspUrls) {
         super(tspUrls);
     }
 
@@ -49,7 +47,7 @@ class TestTimestamperWorker extends TimestamperWorker {
             Long logRecord) {
         return new SingleTimestampRequest(logRecord) {
             @Override
-            protected InputStream makeTsRequest(TimeStampRequest req,
+            protected AbstractTimestampRequest.TsRequest makeTsRequest(TimeStampRequest req,
                     List<String> tspUrls) throws Exception {
                 synchronized (shouldFail) {
                     if (shouldFail) {
@@ -78,7 +76,7 @@ class TestTimestamperWorker extends TimestamperWorker {
             Long[] logRecords, String[] signatureHashes) {
         return new BatchTimestampRequest(logRecords, signatureHashes) {
             @Override
-            protected InputStream makeTsRequest(TimeStampRequest req,
+            protected AbstractTimestampRequest.TsRequest makeTsRequest(TimeStampRequest req,
                     List<String> tspUrls) throws Exception {
                 synchronized (shouldFail) {
                     if (shouldFail) {

@@ -1,3 +1,11 @@
+xroad (6.7.9-1) trusty; urgency=low
+
+  * Fix timestamper connection checking
+  * Fix timestamper status when batch timestamping is used
+  * Timestamping diagnostics displays status for all defined timestamping services
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Fri, 15 Jan 2016 14:41:01 +0300
+
 xroad (6.7.8-1) trusty; urgency=low
 
   * Security server offers diagnostics information for time stamping service

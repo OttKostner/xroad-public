@@ -41,29 +41,69 @@ public class DiagnosticsStatus implements Serializable {
     private int returnCode;
     private LocalTime prevUpdate;
     private LocalTime nextUpdate;
+    @Setter
+    private String description;
 
+    /**
+     * Constructor
+     * @param returnCode return code
+     * @param prevUpdate previous update
+     */
     public DiagnosticsStatus(int returnCode, LocalTime prevUpdate) {
         this.returnCode = returnCode;
         this.prevUpdate = prevUpdate;
     }
 
+
+    /**
+     *
+     * @param returnCode
+     * @param prevUpdate
+     * @param description
+     */
+    public DiagnosticsStatus(int returnCode, LocalTime prevUpdate, String description) {
+        this.returnCode = returnCode;
+        this.prevUpdate = prevUpdate;
+        this.description = description;
+    }
+
+    /**
+     * Constructor
+     * @param returnCode return code
+     * @param prevUpdate previous update
+     * @param nextUpdate next update
+     */
     public DiagnosticsStatus(int returnCode, LocalTime prevUpdate, LocalTime nextUpdate) {
         this.returnCode = returnCode;
         this.prevUpdate = prevUpdate;
         this.nextUpdate = nextUpdate;
     }
 
-    public void setReturnCodeNow(int returnCode) {
-        this.returnCode = returnCode;
+    /**
+     * Set return code
+     * @param newReturnCode return code
+     */
+    public void setReturnCodeNow(int newReturnCode) {
+        this.returnCode = newReturnCode;
         this.prevUpdate = LocalTime.now();
     }
 
+    /**
+     * Get formatted previous update value
+     * @return previous update
+     */
     public String getFormattedPrevUpdate() {
         return getFormattedLocalTime(prevUpdate);
     }
+
+    /**
+     * Get formatted next update value
+     * @return next update
+     */
     public String getFormattedNextUpdate() {
         return getFormattedLocalTime(nextUpdate);
     }
+
     private String getFormattedLocalTime(LocalTime time) {
         if (time == null) {
             return "";

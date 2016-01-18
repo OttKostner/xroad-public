@@ -198,6 +198,7 @@ en:
     index:
       global_configuration: "Global Configuration"
       timestamping: "Timestamping"
+      service_url: "Service URL"
       status: "Status"
       message: "Message"
       previous_update: "Previous Update"

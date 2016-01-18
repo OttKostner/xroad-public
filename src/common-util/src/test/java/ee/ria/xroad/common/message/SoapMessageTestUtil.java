@@ -24,31 +24,66 @@ package ee.ria.xroad.common.message;
 
 import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.identifier.ServiceId;
-import ee.ria.xroad.common.message.*;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 
+/**
+ * Test utils for SOAP messages
+ */
 public final class SoapMessageTestUtil {
 
     public static final String QUERY_DIR = "../proxy/src/test/queries/";
 
+    /**
+     * Constructor
+     */
     private SoapMessageTestUtil() {
     }
 
+    /**
+     * Build SOAP message
+     * @param sender message sender
+     * @param receiver message receiver
+     * @param userId user id
+     * @param queryId query id
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl build(ClientId sender,
             ServiceId receiver, String userId, String queryId)
                     throws Exception {
         return build(false, sender, receiver, userId, queryId, null);
     }
 
+    /**
+     * Build SOAP message
+     * @param isRpcEncoded wheter message is rpc encoded
+     * @param sender message sender
+     * @param receiver message receiver
+     * @param userId user id
+     * @param queryId query id
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl build(boolean isRpcEncoded, ClientId sender,
             ServiceId receiver, String userId, String queryId)
                     throws Exception {
         return build(isRpcEncoded, sender, receiver, userId, queryId, null);
     }
 
+    /**
+     *
+     * @param isRpcEncoded wheter message is rpc encoded
+     * @param sender message sender
+     * @param receiver message receiver
+     * @param userId user id
+     * @param queryId query id
+     * @param createBodyCallback callback for body creation
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl build(boolean isRpcEncoded, ClientId sender,
             ServiceId receiver, String userId, String queryId,
             SoapBuilder.SoapBodyCallback createBodyCallback)
@@ -67,10 +102,22 @@ public final class SoapMessageTestUtil {
         return builder.build();
     }
 
+    /**
+     * File to bytes
+     * @param fileName file
+     * @return byte array
+     * @throws Exception when error occurs
+     */
     public static byte[] fileToBytes(String fileName) throws Exception {
         return IOUtils.toByteArray(newQueryInputStream(fileName));
     }
 
+    /**
+     * SOAP message to bytes
+     * @param soap SOAP message
+     * @return byte array
+     * @throws Exception when error occurs
+     */
     public static byte[] messageToBytes(Soap soap) throws Exception {
         if (soap instanceof SoapMessage) {
             return ((SoapMessage)soap).getBytes();
@@ -79,25 +126,58 @@ public final class SoapMessageTestUtil {
         return soap.getXml().getBytes();
     }
 
+    /**
+     * Create SOAP message from file
+     * @param fileName input file
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static Soap createSoapMessage(String fileName)
             throws Exception {
         return createSoapMessage(QUERY_DIR, fileName);
     }
 
+    /**
+     * Create SOAP message from file
+     * @param queryDir query directory
+     * @param fileName file
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static Soap createSoapMessage(String queryDir, String fileName)
             throws Exception {
         return new SoapParserImpl().parse(newQueryInputStream(queryDir, fileName));
     }
 
+    /**
+     * Create SOAP message from byte array
+     * @param data byte array
+     * @return SOAP message
+     * @throws Exception when error occurs
+     */
     public static Soap createSoapMessage(byte[] data)
             throws Exception {
         return new SoapParserImpl().parse(new ByteArrayInputStream(data));
     }
 
+    /**
+     * Create SOAP request from file
+     * @param fileName input file
+     * @return SOAP request
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createRequest(String fileName)
             throws Exception {
         return createRequest(QUERY_DIR, fileName);
     }
+
+    /**
+     * Create SOAP request
+     * @param queryDir query directory
+     * @param fileName input file
+     * @return SOAP request
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createRequest(String queryDir, String fileName)
             throws Exception {
         Soap message = createSoapMessage(queryDir, fileName);
@@ -113,10 +193,24 @@ public final class SoapMessageTestUtil {
         return (SoapMessageImpl) message;
     }
 
+    /**
+     * Create SOAP response from file
+     * @param fileName input file
+     * @return SOAP response
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createResponse(String fileName)
             throws Exception {
         return createResponse(QUERY_DIR, fileName);
     }
+
+    /**
+     * Create SOAP response
+     * @param queryDir query directory
+     * @param fileName input file
+     * @return SOAP response
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createResponse(String queryDir, String fileName)
             throws Exception {
         Soap message = createSoapMessage(queryDir, fileName);
@@ -132,10 +226,24 @@ public final class SoapMessageTestUtil {
         return (SoapMessageImpl) message;
     }
 
+    /**
+     * Create query input stream
+     * @param fileName file
+     * @return input stream
+     * @throws Exception when error occurs
+     */
     public static FileInputStream newQueryInputStream(String fileName)
             throws Exception {
         return newQueryInputStream(QUERY_DIR, fileName);
     }
+
+    /**
+     * Create new query input stream
+     * @param queryDir query directory
+     * @param fileName input file
+     * @return input stream
+     * @throws Exception when error occurs
+     */
     public static FileInputStream newQueryInputStream(String queryDir, String fileName)
             throws Exception {
         return new FileInputStream(queryDir + fileName);

@@ -111,8 +111,9 @@ public final class AtomicSave {
      * 3. renames file in target directory to target name
      * The last step is the part which is done atomically, it is still possible for example that
      * step 1 succeeds but step 2 fails
-     * @param sourceFileName
-     * @param targetFileName
+     * @param sourceFileName source
+     * @param targetFileName target
+     * @throws IOException when file operation fails
      */
     public static void moveBetweenFilesystems(String sourceFileName, String targetFileName) throws IOException {
         Path source = Paths.get(sourceFileName);

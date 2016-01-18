@@ -593,6 +593,10 @@ public final class SystemProperties {
                 Integer.getInteger(SIGNER_KEY_LENGTH, DEFAULT_SIGNER_KEY_LENGTH));
     }
 
+    /**
+     * Get CSR signature algorithm
+     * @return algorithm
+     */
     public static String getSignerCsrSignatureAlgorithm() {
         return System.getProperty(SIGNER_CSR_SIGNATURE_ALGORITHM, getDefaultSignatureAlgorithm());
     }
@@ -890,32 +894,47 @@ public final class SystemProperties {
                         Integer.toString(PortNumbers.CLIENT_HTTPS_PORT)));
     }
 
-    /** Global default digital signature algorithm. */
+    /**
+     * Global default digital signature algorithm.
+     * @return algorithm
+     */
     public static String getDefaultSignatureAlgorithm() {
         return System.getProperty(DEFAULT_SIGNATURE_ALGORITHM, CryptoUtils.DEFAULT_SIGNATURE_ALGORITHM);
     }
 
+    /**
+     * Get proxy client's TLS protocols
+     * @return protocols
+     */
     public static String[] getProxyClientTLSProtocols() {
         return System.getProperty(PROXY_CLIENT_TLS_PROTOCOLS, "TLSv1.2,TLSv1.1").split(",");
     }
 
-    private static final String DEFAULT_CLIENT_SSL_CIPHER_SUITES =
-                    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256," +
-                    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256," +
-                    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384," +
-                    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384," +
-                    "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256," +
-                    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256," +
-                    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256," +
-                    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384," +
-                    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA," +
-                    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA," +
-                    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA," +
-                    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA";
+    private static final String DEFAULT_CLIENT_SSL_CIPHER_SUITES = "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,"
+                            + "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,"
+                            + "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,"
+                            + "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,"
+                            + "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,"
+                            + "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,"
+                            + "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,"
+                            + "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,"
+                            + "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,"
+                            + "TLS_DHE_RSA_WITH_AES_128_CBC_SHA,"
+                            + "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,"
+                            + "TLS_DHE_RSA_WITH_AES_256_CBC_SHA";
+
+    /**
+     * Get proxy client's TLS cipher suites
+     * @return cipher suites
+     */
     public static String[] getProxyClientTLSCipherSuites() {
         return System.getProperty(PROXY_CLIENT_TLS_CIPHERS, DEFAULT_CLIENT_SSL_CIPHER_SUITES).split(",");
     }
 
+    /**
+     * Tell whether token PIN policy should be enforced
+     * @return true if PIN policy should be enforced
+     */
     public static boolean shouldEnforceTokenPinPolicy() {
         return Boolean.valueOf(System.getProperty(PROXY_ENFORCE_TOKEN_PIN_POLICY, "false"));
     }

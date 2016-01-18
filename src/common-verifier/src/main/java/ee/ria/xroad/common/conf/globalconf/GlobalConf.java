@@ -215,7 +215,7 @@ public final class GlobalConf {
      * no instance identifiers are specified
      */
     public static List<MemberInfo> getMembers(String... instanceIdentifiers) {
-        log.trace("getMembers({})", instanceIdentifiers);
+        log.trace("getMembers({})", (Object)instanceIdentifiers);
 
         return getInstance().getMembers(instanceIdentifiers);
     }
@@ -248,7 +248,7 @@ public final class GlobalConf {
      */
     public static List<GlobalGroupInfo> getGlobalGroups(
             String... instanceIdentifiers) {
-        log.trace("getGlobalGroups({})", instanceIdentifiers);
+        log.trace("getGlobalGroups({})", (Object)instanceIdentifiers);
 
         return getInstance().getGlobalGroups(instanceIdentifiers);
     }
@@ -270,7 +270,7 @@ public final class GlobalConf {
      * no instance identifiers are specified
      */
     public static Set<String> getMemberClasses(String... instanceIdentifiers) {
-        log.trace("getMemberClasses({})", instanceIdentifiers);
+        log.trace("getMemberClasses({})", (Object)instanceIdentifiers);
 
         return getInstance().getMemberClasses(instanceIdentifiers);
     }
@@ -412,8 +412,8 @@ public final class GlobalConf {
     public static boolean authCertMatchesMember(X509Certificate cert,
             ClientId memberId) throws Exception {
         log.trace("authCertMatchesMember({}: {}, {})",
-                new Object[] {cert.getSerialNumber(), cert.getSubjectDN(),
-                        memberId});
+                cert.getSerialNumber(), cert.getSubjectDN(),
+                memberId);
 
         return getInstance().authCertMatchesMember(cert, memberId);
     }

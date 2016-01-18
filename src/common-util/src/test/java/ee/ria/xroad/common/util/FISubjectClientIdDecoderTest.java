@@ -46,11 +46,16 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by hyoty on 25.8.2015.
+ * Unit tests for {@link FISubjectClientIdDecoder}
  */
 public class FISubjectClientIdDecoderTest {
 
     private static KeyPair keyPair;
+
+    /**
+     * Setup tests
+     * @throws NoSuchAlgorithmException when algorithm is not available
+     */
     @BeforeClass
     public static void init() throws NoSuchAlgorithmException {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -58,43 +63,90 @@ public class FISubjectClientIdDecoderTest {
         keyPair = generator.generateKeyPair();
     }
 
+    /**
+     * Test decoding client id
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test
     public void shouldDecodeClientId() throws GeneralSecurityException, IOException, OperatorCreationException {
-        X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        X509Certificate cert = generateSelfSignedCertificate(
+                "C=FI, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
         ClientId clientId = FISubjectClientIdDecoder.getSubjectClientId(cert);
         assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
 
-        cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, "
+                + "serialNumber=FI-TEST/serverCode/PUB", keyPair);
         clientId = FISubjectClientIdDecoder.getSubjectClientId(cert);
         assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
     }
 
+    /**
+     * Test that decoder fails when empty components are found
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
     public void shouldFailIfEmptyComponents() throws GeneralSecurityException, IOException, OperatorCreationException {
-        final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=///", keyPair);
+        final X509Certificate cert = generateSelfSignedCertificate(
+                "C=FI, O=ACME, CN=1234567-8, serialNumber=///", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
+    /**
+     * Test that decoder fails if there are too many components
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
-    public void shouldFailIfTooManyComponents() throws GeneralSecurityException, IOException, OperatorCreationException {
-        final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=ACME, CN=1234567-8, serialNumber=1/2/3/4", keyPair);
+    public void shouldFailIfTooManyComponents() throws GeneralSecurityException, IOException,
+            OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate(
+                "C=FI, O=ACME, CN=1234567-8, serialNumber=1/2/3/4", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
+    /**
+     * Test that decoder fails if country code is wrong
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
-    public void shouldFailIfCountryDoesNotMatch() throws GeneralSecurityException, IOException, OperatorCreationException {
-        final X509Certificate cert = generateSelfSignedCertificate("C=XX, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+    public void shouldFailIfCountryDoesNotMatch() throws GeneralSecurityException, IOException,
+            OperatorCreationException {
+        final X509Certificate cert = generateSelfSignedCertificate(
+                "C=XX, O=ACME, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
+    /**
+     * Test that decoder fails if organization is missing
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
     public void shouldFailIfOrgMissing() throws GeneralSecurityException, IOException, OperatorCreationException {
-        final X509Certificate cert = generateSelfSignedCertificate("C=FI, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
+        final X509Certificate cert = generateSelfSignedCertificate(
+                "C=FI, CN=1234567-8, serialNumber=FI-TEST/serverCode/PUB", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
     /*
-    Tests for legacy format
+     *
+     * Tests for legacy format
+     *
+     */
+
+    /**
+     * Test that legacy format decoding succeeds
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
      */
     @Test
     public void shouldDecodeClientIdLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
@@ -103,20 +155,35 @@ public class FISubjectClientIdDecoderTest {
         assertEquals(ClientId.create("FI-TEST", "PUB", "1234567-8"), clientId);
     }
 
+    /**
+     * Test that decoder fails if legacy format is missing a component
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
-    public void shouldFailIfComponentMissingLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
+    public void shouldFailIfComponentMissingLegacy() throws GeneralSecurityException, IOException,
+            OperatorCreationException {
         final X509Certificate cert = generateSelfSignedCertificate("C=FI, O=FI-TEST, CN=1234567-8", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
+    /**
+     * Test that decoder fails if country code does not match
+     * @throws GeneralSecurityException when security exception occurs
+     * @throws IOException when I/O error occurs
+     * @throws OperatorCreationException when operator creation fails
+     */
     @Test(expected = CodedException.class)
-    public void shouldFailIfCountryDoesNotMatchLegacy() throws GeneralSecurityException, IOException, OperatorCreationException {
+    public void shouldFailIfCountryDoesNotMatchLegacy() throws GeneralSecurityException, IOException,
+            OperatorCreationException {
         final X509Certificate cert = generateSelfSignedCertificate("C=XX, O=FI-TEST, OU=PUB, CN=1234567-8", keyPair);
         FISubjectClientIdDecoder.getSubjectClientId(cert);
     }
 
 
-    private X509Certificate generateSelfSignedCertificate(String dn, KeyPair pair) throws OperatorCreationException, CertificateException {
+    private X509Certificate generateSelfSignedCertificate(String dn, KeyPair pair) throws OperatorCreationException,
+            CertificateException {
         ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").build(pair.getPrivate());
         X500Name name = new X500Name(dn);
         JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(

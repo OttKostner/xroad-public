@@ -65,13 +65,13 @@ class SingleTimestampRequest extends AbstractTimestampRequest {
     }
 
     @Override
-    Object result(TimeStampResponse tsResponse) throws Exception {
+    Object result(TimeStampResponse tsResponse, String url) throws Exception {
         byte[] timestampDer = getTimestampDer(tsResponse);
 
         updateSignatureProperties(timestampDer);
 
         return new Timestamper.TimestampSucceeded(logRecords, timestampDer,
-                null, null);
+                null, null, url);
     }
 
     private void updateSignatureProperties(byte[] timestampDer)

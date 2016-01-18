@@ -22,7 +22,18 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
-import java.io.*;
+import ee.ria.xroad.common.CodedException;
+import ee.ria.xroad.common.conf.ConfProvider;
+import ee.ria.xroad.common.util.AtomicSave;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -31,17 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.joda.time.DateTime;
-
-import ee.ria.xroad.common.CodedException;
-import ee.ria.xroad.common.conf.ConfProvider;
-import ee.ria.xroad.common.util.AtomicSave;
 
 import static ee.ria.xroad.common.ErrorCodes.X_INTERNAL_ERROR;
 import static ee.ria.xroad.common.ErrorCodes.X_OUTDATED_GLOBALCONF;
@@ -239,7 +239,7 @@ public class ConfigurationDirectory {
     private static class Walker extends SimpleFileVisitor<Path> {
         private final Consumer<Path> consumer;
 
-        public Walker(Consumer<Path> consumer) {
+        Walker(Consumer<Path> consumer) {
             this.consumer = consumer;
         }
 

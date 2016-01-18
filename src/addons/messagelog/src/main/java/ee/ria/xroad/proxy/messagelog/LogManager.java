@@ -25,10 +25,7 @@ package ee.ria.xroad.proxy.messagelog;
 import akka.actor.*;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ee.ria.xroad.common.CodedException;
-import ee.ria.xroad.common.CommonMessages;
-import ee.ria.xroad.common.DiagnosticsErrorCodes;
-import ee.ria.xroad.common.DiagnosticsUtils;
+import ee.ria.xroad.common.*;
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
 import ee.ria.xroad.common.conf.serverconf.ServerConf;
 import ee.ria.xroad.common.message.SoapMessageImpl;
@@ -44,6 +41,7 @@ import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
 
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -157,7 +155,7 @@ public class LogManager extends AbstractLogManager {
         try {
             log.info("MessageLog.onReceive({})", message);
             if (message instanceof String && CommonMessages.TIMESTAMP_STATUS.equals(message)) {
-                getSender().tell(status, getSelf());
+                getSender().tell(statusMap, getSelf());
             } else {
                 super.onReceive(message);
             }
@@ -199,20 +197,21 @@ public class LogManager extends AbstractLogManager {
 
 
             if (result instanceof Timestamper.TimestampSucceeded) {
-                status.setReturnCodeNow(DiagnosticsErrorCodes.RETURN_SUCCESS);
                 return saveTimestampRecord((Timestamper.TimestampSucceeded) result);
             } else if (result instanceof Timestamper.TimestampFailed) {
                 Exception e = ((Timestamper.TimestampFailed) result).getCause();
-                log.info("Timestamp failed: {}", e);
-                status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
+                log.warn("Timestamp failed: {}", e);
+                for (String tspUrl: ServerConf.getTspUrl()) {
+                    statusMap.put(tspUrl, new DiagnosticsStatus(DiagnosticsUtils.getErrorCode(e), LocalTime.now(),
+                            tspUrl));
+                }
                 throw e;
             } else {
-                status.setReturnCodeNow(DiagnosticsErrorCodes.ERROR_CODE_INTERNAL);
+
                 throw new RuntimeException(
                         "Unexpected result from Timestamper: " + result.getClass());
             }
         } catch (Exception e) {
-            status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
             throw e;
         }
     }
@@ -253,6 +252,8 @@ public class LogManager extends AbstractLogManager {
     protected TimestampRecord saveTimestampRecord(
             Timestamper.TimestampSucceeded message) throws Exception {
         log.trace("saveTimestampRecord()");
+
+        statusMap.put(message.getUrl(), new DiagnosticsStatus(DiagnosticsErrorCodes.RETURN_SUCCESS, LocalTime.now()));
 
         TimestampRecord timestampRecord = new TimestampRecord();
         timestampRecord.setTime(new Date().getTime());

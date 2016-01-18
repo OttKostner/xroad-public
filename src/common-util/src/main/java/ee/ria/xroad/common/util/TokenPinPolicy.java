@@ -43,26 +43,36 @@ import java.util.Set;
  *     </ul>
  *     <li>Does not include characters from the CharacterClass.INVALID character class</li>
  * </ul>
- * Created by hyoty on 24.11.2015.
  */
 public final class TokenPinPolicy {
 
     public static final int MIN_PASSWORD_LENGTH = 10;
     public static final int MIN_CHARACTER_CLASS_COUNT = 3;
 
+    /**
+     * Enumeration for character classes
+     */
     public enum CharacterClass {
 
-        DIGIT ,
+        DIGIT,
         UPPERCASE,
         LOWERCASE,
         SPECIAL,
         INVALID;
 
-        public static CharacterClass of (char ch) {
-            if ( ch < 32 || ch > 126 )    return INVALID;
-            if ( ch >= '0' && ch <= '9' ) return DIGIT;
-            if ( ch >= 'A' && ch <= 'Z' ) return UPPERCASE;
-            if ( ch >= 'a' && ch <= 'z' ) return LOWERCASE;
+        public static final int MIN_ACCEPTED = 32;
+        public static final int MAX_ACCEPTED = 126;
+
+        /**
+         * Tells the character class of character
+         * @param ch character
+         * @return character class
+         */
+        public static CharacterClass of(char ch) {
+            if (ch <  MIN_ACCEPTED || ch > MAX_ACCEPTED) return INVALID;
+            if (ch >= '0' && ch <= '9') return DIGIT;
+            if (ch >= 'A' && ch <= 'Z') return UPPERCASE;
+            if (ch >= 'a' && ch <= 'z') return LOWERCASE;
             return SPECIAL;
         }
     }
@@ -106,6 +116,9 @@ public final class TokenPinPolicy {
         //Utility class
     }
 
+    /**
+     * PIN description
+     */
     @Getter
     public static final class Description {
         private final int length;
@@ -118,12 +131,20 @@ public final class TokenPinPolicy {
             this.characterClasses = Collections.unmodifiableSet(classes);
         }
 
+        /**
+         * Tells if PIN is valid
+         * @return true if valid
+         */
         public boolean isValid() {
             return this.length >= this.minLength
                     && !this.characterClasses.contains(CharacterClass.INVALID)
                     && this.characterClasses.size() >= this.minCharacterClassCount;
         }
 
+        /**
+         * Tells whether PIN has invalid characters
+         * @return true if there are invalid characters
+         */
         public boolean hasInvalidCharacters() {
             return this.characterClasses.contains(CharacterClass.INVALID);
         }

@@ -267,7 +267,8 @@ public final class CertUtils {
      * Generates certificate request
      * @return byte content of the certificate request
      */
-    static byte[] generateCertRequest(PrivateKey privateKey, PublicKey publicKey, String principal) throws NoSuchAlgorithmException, OperatorCreationException, IOException {
+    static byte[] generateCertRequest(PrivateKey privateKey, PublicKey publicKey, String principal)
+            throws NoSuchAlgorithmException, OperatorCreationException, IOException {
         X500Principal subject = new X500Principal(principal);
 
         ContentSigner signGen = new JcaContentSignerBuilder("SHA256withRSA").build(privateKey);
@@ -287,13 +288,14 @@ public final class CertUtils {
 
     /**
      * Read private and public keys from PEM file
-     * @param filename
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     * @throws IOException
+     * @param filename file containing the keypair
+     * @return KeyPair
+     * @throws NoSuchAlgorithmException when algorithm for decoding is not available
+     * @throws InvalidKeySpecException when key file is invalid
+     * @throws IOException when I/O error occurs
      */
-    public static KeyPair readKeyPairFromPemFile(String filename) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public static KeyPair readKeyPairFromPemFile(String filename)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         File pkFile = new File(filename);
         try (PEMParser pemParser = new PEMParser(new FileReader(pkFile))) {
             Object o = pemParser.readObject();
@@ -306,7 +308,8 @@ public final class CertUtils {
             final PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(pki.getEncoded());
             final PrivateKey privateKey = kf.generatePrivate(ks);
             final RSAPrivateKey rpk = RSAPrivateKey.getInstance(pki.parsePrivateKey());
-            final PublicKey publicKey = kf.generatePublic(new RSAPublicKeySpec(rpk.getModulus(), rpk.getPublicExponent()));
+            final PublicKey publicKey = kf.generatePublic(new RSAPublicKeySpec(rpk.getModulus(),
+                    rpk.getPublicExponent()));
             KeyPair kp = new KeyPair(publicKey, privateKey);
             return kp;
         }
@@ -314,9 +317,9 @@ public final class CertUtils {
 
     /**
      * Write certificate to file
-     * @param certBytes
-     * @param filename
-     * @throws IOException
+     * @param certBytes raw bytes of the certificate
+     * @param filename output file
+     * @throws IOException when I/O error occurs
      */
     public static void writePemToFile(byte[] certBytes, String filename) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(filename)) {
@@ -326,14 +329,15 @@ public final class CertUtils {
 
     /**
      * Read X509 certificate from file
-     * @param filename
+     * @param filename input file
      * @return X509Certificate
-     * @throws CertificateException
-     * @throws FileNotFoundException
+     * @throws CertificateException when certificate is invalid
+     * @throws FileNotFoundException when file is not found
+     * @throws IOException when I/O error occurs
      */
     public static X509Certificate readCertificate(String filename) throws CertificateException, IOException {
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
-        try (FileInputStream is = new FileInputStream (filename)) {
+        try (FileInputStream is = new FileInputStream(filename)) {
             X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
             return cer;
         }
@@ -344,7 +348,7 @@ public final class CertUtils {
      * @param filenameKey pem file containing private key
      * @param filenamePem pem file containing certificate
      * @param filenameP12 output filename of the .p12 keystore
-     * @throws Exception
+     * @throws Exception when error occurs
      */
     public static void createPkcs12(String filenameKey, String filenamePem, String filenameP12) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
@@ -354,7 +358,7 @@ public final class CertUtils {
         PrivateKey privateKey = keyPair.getPrivate();
 
         X509Certificate cert = readCertificate(filenamePem);
-        Certificate[] outChain = { cert };
+        Certificate[] outChain = {cert};
 
         KeyStore outStore = KeyStore.getInstance("PKCS12");
         outStore.load(null, InternalSSLKey.getKEY_PASSWORD());

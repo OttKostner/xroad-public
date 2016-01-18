@@ -59,18 +59,22 @@
         <table id="global_configuration" class="bordered">
           <thead>
           <th class="diagnostics_col_status"><%= t 'diagnostics.index.status' %></th>
+          <th class="diagnostics_col_message"><%= t 'diagnostics.index.service_url' %></th>
           <th class="diagnostics_col_message"><%= t 'diagnostics.index.message' %></th>
           <th class="diagnostics_col_prev_update"><%= t 'diagnostics.index.previous_update' %></th>
-          <th class="diagnostics_col_next_update"><%= t 'diagnostics.index.next_update' %></th>
           </thead>
           <tbody>
-          <tr>
-            <td><i class="fa fa-circle <%= @timestamperStatusClass %>"></i></td>
-            <td><%= @timestamperStatusMessage %></td>
-            <td><%= @timestamperPrevUpdate %></td>
-            <td><%= @timestamperNextUpdate %></td>
-          </tr>
+          <% @timestamp_data.each do |key, status| %>
+              <tr>
+                <td><i class="fa fa-circle <%= get_status_class(status['returnCode']) %>"></i></td>
+                <td><%= key %></td>
+                <td><%= get_confclient_status_message(status['returnCode']) %></td>
+                <td><%= get_formatted_time(status['prevUpdate']) %></td>
+
+              </tr>
+          <% end %>
           </tbody>
+
         </table>
       </div>
 

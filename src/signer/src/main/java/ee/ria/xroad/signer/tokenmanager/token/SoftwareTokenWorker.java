@@ -199,8 +199,8 @@ public class SoftwareTokenWorker extends AbstractTokenWorker {
             try {
                 activateToken();
             } catch (Exception e) {
-                // Swallow exception; the token status reflects the state
                 setTokenActive(tokenId, false);
+                log.trace("Failed to activate token", e);
             }
         }
     }
@@ -219,8 +219,7 @@ public class SoftwareTokenWorker extends AbstractTokenWorker {
                 initializePrivateKey(keyId);
             } catch (Exception e) {
                 setKeyAvailable(keyId, false);
-                log.trace("Failed to load private key from key store: {}",
-                        e.getMessage());
+                log.trace("Failed to load private key from key store", e);
             }
         }
     }
@@ -237,7 +236,7 @@ public class SoftwareTokenWorker extends AbstractTokenWorker {
                     log.debug("Found new key with id '{}'", keyId);
                     addKey(tokenId, keyId, publicKeyBase64);
                 } catch (Exception e) {
-                    log.error("Failed to read pkcs#12 key '{}': {}", keyId, e);
+                    log.error("Failed to read pkcs#12 key '{}'", keyId, e);
                 }
             }
         }
@@ -265,7 +264,7 @@ public class SoftwareTokenWorker extends AbstractTokenWorker {
 
         log.info("Initializing software token with new pin...");
 
-        if ( SystemProperties.shouldEnforceTokenPinPolicy() && !TokenPinPolicy.validate(pin) ) {
+        if (SystemProperties.shouldEnforceTokenPinPolicy() && !TokenPinPolicy.validate(pin)) {
             throw new CodedException(X_TOKEN_PIN_POLICY_FAILURE, "Token PIN does not meet complexity requirements");
         }
 

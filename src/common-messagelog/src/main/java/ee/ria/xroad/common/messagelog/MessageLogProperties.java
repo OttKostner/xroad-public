@@ -95,6 +95,11 @@ public final class MessageLogProperties {
     /** Postfix for overriding SOAP body logging for remote producers **/
     private static final String SOAP_BODY_LOGGING_REMOTE_PRODUCER =
             "-remote-producer-subsystems";
+    public static final int NUM_COMPONENTS = 4;
+    public static final int FIRST_COMPONENT = 0;
+    public static final int SECOND_COMPONENT = 1;
+    public static final int THIRD_COMPONENT = 2;
+    public static final int FOURTH_COMPONENT = 3;
 
     private MessageLogProperties() {
     }
@@ -188,7 +193,7 @@ public final class MessageLogProperties {
 
     /**
      * Returns global setting for SOAP body logging
-     * @return
+     * @return true if body logging is enabled
      */
     public static boolean isSoapBodyLoggingEnabled() {
         return "true".equalsIgnoreCase(System.getProperty(
@@ -199,7 +204,7 @@ public final class MessageLogProperties {
     /**
      * Returns list of remote producer subsystem ClientIds for which global SOAP body logging
      * setting is overridden
-     * @return
+     * @return list of ClientId
      */
     public static Collection<ClientId> getSoapBodyLoggingRemoteProducerOverrides()  {
         return getSoapBodyLoggingOverrides(false);
@@ -208,7 +213,7 @@ public final class MessageLogProperties {
     /**
      * Returns list of local producer subsystem ClientIds for which global SOAP body logging
      * setting is overridden
-     * @return
+     * @return list of ClientId
      */
     public static Collection<ClientId> getSoapBodyLoggingLocalProducerOverrides()  {
         return getSoapBodyLoggingOverrides(true);
@@ -272,15 +277,16 @@ public final class MessageLogProperties {
         Splitter codeSplitter = Splitter.on("/").trimResults();
         for (String oneSubsystemParam: splitSubsystemParams) {
             List<String> codes = Lists.newArrayList(codeSplitter.split(oneSubsystemParam));
-            if (codes.size() != 4) {
+            if (codes.size() != NUM_COMPONENTS) {
                 throw new IllegalStateException(
-                        " SOAP body logging override parameter should be comma-separated list of four slash-separated codes" +
-                                " identifying one subsystem," +
-                                " for example \"FI/ORG/1234567-1/subsystem1\", detected bad value: " +
-                                oneSubsystemParam);
+                        " SOAP body logging override parameter should be comma-separated list of four "
+                                + "slash-separated codes"
+                                + " identifying one subsystem,"
+                                + " for example \"FI/ORG/1234567-1/subsystem1\", detected bad value: "
+                                + oneSubsystemParam);
             }
-            ClientId id = ClientId.create(codes.get(0),
-                    codes.get(1), codes.get(2), codes.get(3));
+            ClientId id = ClientId.create(codes.get(FIRST_COMPONENT),
+                    codes.get(SECOND_COMPONENT), codes.get(THIRD_COMPONENT), codes.get(FOURTH_COMPONENT));
             toReturn.add(id);
         }
         return toReturn;

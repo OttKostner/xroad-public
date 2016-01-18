@@ -450,15 +450,12 @@ class ClientMessageProcessor extends MessageProcessorBase {
 
     private static URI getDummyServiceAddress(URI[] addresses)
             throws Exception {
-        boolean sslEnabled = SystemProperties.isSslEnabled();
-        if (!sslEnabled) {
+        if (!SystemProperties.isSslEnabled()) {
             // In non-ssl mode we just connect to the first address
             return addresses[0];
         }
-
-        String protocol = sslEnabled ? "https" : "http";
-        int port = SystemProperties.getServerProxyPort();
-        return new URI(protocol, null, "localhost", port, "/", null, null);
+        final int port = SystemProperties.getServerProxyPort();
+        return new URI("https", null, "localhost", port, "/", null, null);
     }
 
     private static URI[] getServiceAddresses(ServiceId serviceProvider)

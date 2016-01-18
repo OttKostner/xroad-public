@@ -162,6 +162,7 @@ public final class SignerClient {
                 throw new TimeoutException();
             }
         } catch (Exception e) {
+            log.error("Exception when waiting for response", e);
             throw connectionTimeoutException();
         }
     }

@@ -25,7 +25,10 @@ package ee.ria.xroad.common;
 /**
  * Configuration client error codes
  */
-public class DiagnosticsErrorCodes {
+public final class DiagnosticsErrorCodes {
+
+    private DiagnosticsErrorCodes() {
+    }
 
     public static final int RETURN_SUCCESS = 0;
     public static final int ERROR_CODE_TIMESTAMP_UNINITIALIZED = 127;

@@ -25,6 +25,10 @@ package ee.ria.xroad.common;
 /**
  * Created by sjk on 12/11/15.
  */
-public interface CommonMessages {
-    static final String TIMESTAMP_STATUS = "TimestampStatus";
+public final class CommonMessages {
+
+    private CommonMessages() {
+    }
+
+    public static final String TIMESTAMP_STATUS = "TimestampStatus";
 }

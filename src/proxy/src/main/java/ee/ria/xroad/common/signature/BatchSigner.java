@@ -208,7 +208,7 @@ public class BatchSigner extends UntypedActor {
                                 new GetTokenBatchSigningEnabled(keyId));
             } catch (Exception e) {
                 log.error("Failed to query if batch signing is enabled for "
-                        + "token with key {}: {}", keyId, e.getMessage());
+                        + "token with key {}", keyId, e);
             }
         }
 

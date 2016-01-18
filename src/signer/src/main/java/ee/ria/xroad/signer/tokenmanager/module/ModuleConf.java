@@ -70,11 +70,10 @@ public final class ModuleConf {
     public static boolean hasChanged() {
         try {
             if (changeChecker == null) {
-                changeChecker =
-                        new FileContentChangeChecker(getDeviceConfFile());
+                changeChecker = new FileContentChangeChecker(getDeviceConfFile());
                 return true;
             }
-            return changeChecker != null ? changeChecker.hasChanged() : true;
+            return changeChecker.hasChanged();
         } catch (Exception e) {
             log.error("Failed to create content change checker or calculate check sum", e);
             return true;

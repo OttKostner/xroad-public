@@ -64,6 +64,7 @@ public class Timestamper extends UntypedActor {
         private final byte[] timestampDer;
         private final String hashChainResult;
         private final String[] hashChains;
+        private final String url;
     }
 
     @Data

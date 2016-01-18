@@ -22,32 +22,9 @@
  */
 package ee.ria.xroad.signer.console;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import akka.actor.ActorSystem;
-import asg.cliche.CLIException;
-import asg.cliche.Command;
-import asg.cliche.InputConverter;
-import asg.cliche.Param;
-import asg.cliche.Shell;
-import asg.cliche.ShellFactory;
+import asg.cliche.*;
 import com.typesafe.config.ConfigFactory;
-import ee.ria.xroad.common.util.TokenPinPolicy;
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.lang.StringUtils;
-
 import ee.ria.xroad.common.AuditLogger;
 import ee.ria.xroad.common.SystemProperties;
 import ee.ria.xroad.common.SystemPropertiesLoader;
@@ -55,13 +32,18 @@ import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.identifier.SecurityServerId;
 import ee.ria.xroad.common.util.PasswordStore;
 import ee.ria.xroad.signer.protocol.SignerClient;
-import ee.ria.xroad.signer.protocol.dto.AuthKeyInfo;
-import ee.ria.xroad.signer.protocol.dto.CertificateInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyUsageInfo;
-import ee.ria.xroad.signer.protocol.dto.MemberSigningInfo;
-import ee.ria.xroad.signer.protocol.dto.TokenInfo;
+import ee.ria.xroad.signer.protocol.dto.*;
 import ee.ria.xroad.signer.protocol.message.*;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 import static ee.ria.xroad.common.AuditLogger.XROAD_USER;
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_SIGNER;
@@ -83,6 +65,11 @@ public class SignerCLI {
             .load();
     }
 
+    /**
+     * Shell input converters
+     * @see <a href="http://cliche.sourceforge.net/">Cliche Manual</a>
+     */
+    @SuppressWarnings({"squid:S1873", "squid:S2386"})
     public static final InputConverter[] CLI_INPUT_CONVERTERS = {
         new InputConverter() {
             @Override

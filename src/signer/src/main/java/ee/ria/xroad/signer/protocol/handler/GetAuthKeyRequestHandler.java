@@ -125,9 +125,8 @@ public class GetAuthKeyRequestHandler
                 return true;
             }
         } catch (Exception e) {
-            log.warn("Ignoring authentication certificate '{}' because: {}",
-                    cert.getSubjectX500Principal().getName(),
-                    e.getMessage());
+            log.warn("Ignoring authentication certificate '{}' because: ",
+                    cert.getSubjectX500Principal().getName(), e);
         }
 
         return false;

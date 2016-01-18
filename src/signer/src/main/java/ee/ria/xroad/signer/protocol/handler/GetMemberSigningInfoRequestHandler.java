@@ -112,7 +112,7 @@ public class GetMemberSigningInfoRequestHandler
                     cert.getOcspBytes());
             return true;
         } catch (Exception e) {
-            log.error("Certificate not suitable: {}", e.getMessage());
+            log.error("Certificate not suitable", e);
             return false;
         }
     }

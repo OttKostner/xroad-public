@@ -40,6 +40,9 @@ public class TokenPinPolicyTest {
     private static final char[] DIGITS            = "1234567890".toCharArray();
     private static final char[] SPECIAL_CHARS     = " !\"#$%&'()*+,-./:;<=>?`@{|}~".toCharArray();
 
+    /**
+     * Test that policy rejects weak passwords
+     */
     @Test
     public void shouldRejectWeakPassword() {
         assertFalse(TokenPinPolicy.validate(null));
@@ -49,11 +52,14 @@ public class TokenPinPolicyTest {
                 generatedPassword(TokenPinPolicy.MIN_PASSWORD_LENGTH, LOWERCASE_LETTERS)));
     }
 
+    /**
+     * Test that policy accepts strong passwords
+     */
     @Test
     public void shouldAcceptStrongPassword() {
-        for ( int i = 0; i < 1000; i ++) {
+        for (int i = 0; i < 1000; i++) {
             final char[] pw = generatedPassword(
-                    TokenPinPolicy.MIN_PASSWORD_LENGTH + i/10,
+                    TokenPinPolicy.MIN_PASSWORD_LENGTH + i / 10,
                     UPPERCASE_LETTERS,
                     LOWERCASE_LETTERS,
                     DIGITS,
@@ -62,10 +68,13 @@ public class TokenPinPolicyTest {
         }
     }
 
+    /**
+     * Test that policy rejects too short passwords
+     */
     @Test
     public void shouldRejectTooShortPassword() {
         final char[] pw = generatedPassword(
-                TokenPinPolicy.MIN_PASSWORD_LENGTH-1,
+                TokenPinPolicy.MIN_PASSWORD_LENGTH - 1,
                 UPPERCASE_LETTERS,
                 LOWERCASE_LETTERS,
                 DIGITS,
@@ -73,6 +82,9 @@ public class TokenPinPolicyTest {
         assertFalse(TokenPinPolicy.validate(pw));
     }
 
+    /**
+     * Test that policy rejects invalid characters
+     */
     @Test
     public void shouldRejectInvalidCharacters() {
         final char[] pw = generatedPassword(
@@ -84,9 +96,12 @@ public class TokenPinPolicyTest {
         assertFalse(TokenPinPolicy.validate(pw));
     }
 
+    /**
+     * Test that policy rejects passwords with not enough character classes
+     */
     @Test
     public void shouldRejectPasswordThatDoesNotHaveEnoughCharacterClasses() {
-        for ( int i = 0; i < 1000; i ++) {
+        for (int i = 0; i < 1000; i++) {
             final char[] pw = generatedPassword(
                     TokenPinPolicy.MIN_PASSWORD_LENGTH,
                     UPPERCASE_LETTERS,
@@ -95,9 +110,12 @@ public class TokenPinPolicyTest {
         }
     }
 
+    /**
+     * Test that policy accepts passwords with enough character classes
+     */
     @Test
     public void shouldAcceptPasswordThatHasEnoughCharacterClasses() {
-        for ( int i = 0; i < 1000; i ++) {
+        for (int i = 0; i < 1000; i++) {
             final char[] pw = generatedPassword(
                     TokenPinPolicy.MIN_PASSWORD_LENGTH,
                     UPPERCASE_LETTERS,
@@ -111,22 +129,22 @@ public class TokenPinPolicyTest {
      * Create a pseudo-random password that contains characters from the specified sets.
      */
     private char[] generatedPassword(int len, char[]... charSets) {
-        assert(len >= charSets.length);
+        assert (len >= charSets.length);
 
         char[] password = new char[len];
         // ensure that the password has one character from each character set
         int charSetIndx = 0;
-        while ( charSetIndx < charSets.length ) {
+        while (charSetIndx < charSets.length) {
             final int indx = RND.nextInt(len);
-            if ( password[indx] == 0 ) {
+            if (password[indx] == 0) {
                 password[indx] = charSets[charSetIndx][RND.nextInt(charSets[charSetIndx].length)];
-                charSetIndx ++;
+                charSetIndx++;
             }
         }
 
-        for ( int i = 0; i < len; i++ ) {
+        for (int i = 0; i < len; i++) {
             char[] chs = charSets[RND.nextInt(charSets.length)];
-            if ( password[i] == 0 )  {
+            if (password[i] == 0)  {
                 password[i] = chs[RND.nextInt(chs.length)];
             }
         }

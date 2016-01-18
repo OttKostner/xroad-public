@@ -62,7 +62,7 @@ class IdleConnectionMonitorThread extends Thread {
                 sleep(intervalMilliseconds);
                 closeNow();
             } catch (InterruptedException ex) {
-                // Ignore
+                log.warn("InterruptedException occurred: {}", ex);
             }
         }
     }

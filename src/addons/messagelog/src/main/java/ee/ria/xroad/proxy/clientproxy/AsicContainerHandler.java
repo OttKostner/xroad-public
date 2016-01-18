@@ -33,9 +33,15 @@ import ee.ria.xroad.proxy.util.MessageProcessorBase;
 
 import static ee.ria.xroad.common.ErrorCodes.X_INVALID_REQUEST;
 
+/**
+ * AsicContainerHandler
+ */
 @Slf4j
-class AsicContainerHandler extends AbstractClientProxyHandler {
+public class AsicContainerHandler extends AbstractClientProxyHandler {
 
+    /**
+     * Constructor
+     */
     public AsicContainerHandler(HttpClient client) {
         super(client);
     }

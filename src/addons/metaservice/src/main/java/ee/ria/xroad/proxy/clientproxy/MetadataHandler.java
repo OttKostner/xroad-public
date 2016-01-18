@@ -34,9 +34,15 @@ import ee.ria.xroad.proxy.util.MessageProcessorBase;
 
 import static ee.ria.xroad.common.ErrorCodes.X_INVALID_REQUEST;
 
+/**
+ * MetadataHandler
+ */
 @Slf4j
-class MetadataHandler extends AbstractClientProxyHandler {
+public class MetadataHandler extends AbstractClientProxyHandler {
 
+    /**
+     * Constructor
+     */
     public MetadataHandler(HttpClient client) {
         super(client);
     }

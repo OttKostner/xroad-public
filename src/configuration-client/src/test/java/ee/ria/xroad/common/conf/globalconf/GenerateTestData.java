@@ -90,7 +90,7 @@ public final class GenerateTestData {
         private final List<ConfDirEntry> entries = new ArrayList<>();
         private boolean writeExpireDate = true;
 
-        public TestConfDir(String name, boolean writeExpireDate) {
+        TestConfDir(String name, boolean writeExpireDate) {
             this(name);
             this.writeExpireDate = writeExpireDate;
         }

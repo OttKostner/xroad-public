@@ -44,12 +44,28 @@ public class SoapMessageBodyManipulator {
      * Extract configuration reading for better testability
      */
     public class Configurator {
+        /**
+         * Returns list of local producer subsystem ClientIds for which global SOAP body logging
+         * setting is overridden
+         * @return list of ClientId
+         */
         public Collection<ClientId> getLocalProducerOverrides() {
             return MessageLogProperties.getSoapBodyLoggingLocalProducerOverrides();
         }
+
+        /**
+         * Returns list of remote producer subsystem ClientIds for which global SOAP body logging
+         * setting is overridden
+         * @return list of ClientId
+         */
         public Collection<ClientId> getRemoteProducerOverrides() {
             return MessageLogProperties.getSoapBodyLoggingRemoteProducerOverrides();
         }
+
+        /**
+         * Tells whether SOAP body logging is enabled
+         * @return true if enabled
+         */
         public boolean isSoapBodyLoggingEnabled() {
             return MessageLogProperties.isSoapBodyLoggingEnabled();
         }
@@ -62,8 +78,10 @@ public class SoapMessageBodyManipulator {
      * Returns the string that should be logged. This will either be the original soap message
      * (when soap:body logging is used for this message) or manipulated soap message with
      * soap:body element cleared.
-     * @param message
-     * @return
+     * @param message soap message
+     * @param clientSide whether we are calling external service (true) or someone else is calling our service (false)
+     * @return the string that should be logged
+     * @throws Exception when error occurs
      */
     public String getLoggableMessageText(SoapMessageImpl message, boolean clientSide) throws Exception {
         if (isSoapBodyLogged(message, clientSide)) {
@@ -91,10 +109,10 @@ public class SoapMessageBodyManipulator {
 
     /**
      * Tells whether SOAP body should be logged for this message.
-     * @param message
+     * @param message SOAP message
      * @param clientSide whether we are calling external service (true) or someone
      *                   else is calling our service (false)
-     * @return
+     * @return true if this message's body is logged
      */
     public boolean isSoapBodyLogged(SoapMessageImpl message, boolean clientSide) {
 
@@ -118,15 +136,14 @@ public class SoapMessageBodyManipulator {
 
     /**
      * Takes one ClientId object, and searches whether it is in searched group of ClientIds
-     * @param searchParam
-     * @param searched
-     * @return
+     * @param searchParam ClientId to search
+     * @param searched collection to search from
+     * @return true if ClientId is in the collection
      */
     public boolean isClientInCollection(ClientId searchParam, Iterable<ClientId> searched) {
         ClientId searchResult = Iterables.find(searched,
-                input -> (input.memberEquals(searchParam) &&
-                        Objects.equals(input.getSubsystemCode(), searchParam.getSubsystemCode())),
-                null);
+                input -> (input.memberEquals(searchParam)
+                        && Objects.equals(input.getSubsystemCode(), searchParam.getSubsystemCode())), null);
         return (searchResult != null);
     }
 

@@ -116,7 +116,7 @@ class AsyncDBImpl implements AsyncDBProvider {
         private String messageQueueDir;
         private String queueName;
 
-        public AddQueueToCache(String messageQueueDir, String queueName)
+        AddQueueToCache(String messageQueueDir, String queueName)
                 throws IOException {
             this.messageQueueDir = messageQueueDir;
             this.queueName = queueName;

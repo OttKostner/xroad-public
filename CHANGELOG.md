@@ -1,5 +1,10 @@
 # Change Log
 
+## 6.7.9 - 2016-01-15
+- Fix timestamper connection checking
+- Fix timestamper status when batch timestamping is used
+- Timestamping diagnostics displays status for all defined timestamping services
+
 ## 6.7.8 - 2016-01-07
 - Security server offers diagnostics information for time stamping service
 - Fixed configuration restore (RHEL)

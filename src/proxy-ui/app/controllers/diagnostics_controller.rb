@@ -25,8 +25,14 @@ java_import Java::ee.ria.xroad.common.DiagnosticsStatus
 java_import Java::ee.ria.xroad.common.DiagnosticsErrorCodes
 java_import Java::ee.ria.xroad.common.util.JsonUtils
 java_import Java::ee.ria.xroad.common.PortNumbers
+java_import Java::com.google.gson.reflect.TypeToken
+java_import Java::java.util.Collection
+require 'json'
+require 'time'
 
 class DiagnosticsController < ApplicationController
+  helper_method :get_confclient_status_message, :get_status_class, :get_formatted_time
+
 
   def index
     logger.info("Diagnostics index")
@@ -36,25 +42,7 @@ class DiagnosticsController < ApplicationController
   end
 
   def prepare_timestamper_ui
-    response = query_timestamper_status
-    if response != nil
-      returnCode = response.getReturnCode()
-      @timestamperStatusMessage = get_confclient_status_message(returnCode)
-      if returnCode == DiagnosticsErrorCodes::RETURN_SUCCESS
-        @timestamperStatusClass = "diagnostics_status_ok"
-      elsif returnCode == DiagnosticsErrorCodes::ERROR_CODE_TIMESTAMP_UNINITIALIZED
-        @timestamperStatusClass = "diagnostics_status_waiting"
-      else
-        @timestamperStatusClass = "diagnostics_status_fail"
-      end
-      @timestamperPrevUpdate = response.getFormattedPrevUpdate()
-      @timestamperNextUpdate = response.getFormattedNextUpdate()
-    else
-      @timestamperStatusMessage = t('diagnostics.error_code_connection_failed')
-      @timestamperStatusClass = "diagnostics_status_fail"
-      @timestamperPrevUpdate = ""
-      @timestamperNextUpdate = ""
-    end
+    @timestamp_data = query_timestamper_status
   end
 
   def prepare_confclient_ui
@@ -62,13 +50,7 @@ class DiagnosticsController < ApplicationController
     if response != nil
       returnCode = response.getReturnCode()
       @globalConfStatusMessage = get_confclient_status_message(returnCode)
-      if returnCode == DiagnosticsErrorCodes::RETURN_SUCCESS
-        @globalConfStatusClass = "diagnostics_status_ok"
-      elsif returnCode == DiagnosticsErrorCodes::ERROR_CODE_UNINITIALIZED
-        @globalConfStatusClass = "diagnostics_status_waiting"
-      else
-        @globalConfStatusClass = "diagnostics_status_fail"
-      end
+      @globalConfStatusClass = get_status_class(returnCode)
       @globalConfPrevUpdate = response.getFormattedPrevUpdate()
       @globalConfNextUpdate = response.getFormattedNextUpdate()
     else
@@ -77,6 +59,22 @@ class DiagnosticsController < ApplicationController
       @globalConfPrevUpdate = ""
       @globalConfNextUpdate = ""
     end
+  end
+
+  def get_status_class (returnCode)
+
+    if returnCode == DiagnosticsErrorCodes::RETURN_SUCCESS
+      return "diagnostics_status_ok"
+    elsif returnCode == DiagnosticsErrorCodes::ERROR_CODE_UNINITIALIZED or returnCode ==
+        DiagnosticsErrorCodes::ERROR_CODE_TIMESTAMP_UNINITIALIZED
+      return "diagnostics_status_waiting"
+    else
+      return "diagnostics_status_fail"
+    end
+  end
+
+  def get_formatted_time (tm)
+    return tm["hour"].to_s+":"+tm["minute"].to_s.rjust(2, "0")
   end
 
   def query_confclient_status
@@ -125,11 +123,9 @@ class DiagnosticsController < ApplicationController
       return nil
     end
 
-    gson = JsonUtils::getSerializer()
-    return gson.fromJson(response.body, DiagnosticsStatus.java_class)
+    return JSON.parse(response.body)
   end
 
-  private
 
   def get_confclient_status_message (returnCode)
     case
@@ -157,5 +153,7 @@ class DiagnosticsController < ApplicationController
         t('diagnostics.error_code_unknown')
     end
   end
+
+
 
 end

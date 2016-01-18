@@ -49,6 +49,9 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Tests for SOAP message body manipulation
+ */
 @Slf4j
 public class SoapMessageBodyManipulatorTest {
 
@@ -73,10 +76,16 @@ public class SoapMessageBodyManipulatorTest {
             });
         }
         TestableSoapMessageBodyManipulator(boolean globalBodyLogging) {
-            this (globalBodyLogging, new ArrayList<ClientId>(),new ArrayList<ClientId>());
+            this (globalBodyLogging, new ArrayList<ClientId>(), new ArrayList<ClientId>());
         }
     }
 
+    /**
+     * Create request SOAP message from file
+     * @param fileName input file
+     * @return soap message
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createRequest(String fileName)
             throws Exception {
         Soap message = createSoapMessage(fileName);
@@ -91,6 +100,13 @@ public class SoapMessageBodyManipulatorTest {
 
         return (SoapMessageImpl) message;
     }
+
+    /**
+     * Create response SOAP message from file
+     * @param fileName input file
+     * @return soap message
+     * @throws Exception when error occurs
+     */
     public static SoapMessageImpl createResponse(String fileName)
             throws Exception {
         Soap message = createSoapMessage(fileName);
@@ -106,38 +122,55 @@ public class SoapMessageBodyManipulatorTest {
         return (SoapMessageImpl) message;
     }
 
+    /**
+     * Create SOAP message from file
+     * @param fileName input file
+     * @return soap message
+     * @throws Exception when error occurs
+     */
     public static Soap createSoapMessage(String fileName)
             throws Exception {
         return new SoapParserImpl().parse(newQueryInputStream(fileName));
     }
+
+    /**
+     * Create new query input stream
+     * @param fileName input file
+     * @return FileInputStream
+     * @throws Exception when error occurs
+     */
     public static FileInputStream newQueryInputStream(String fileName)
             throws Exception {
         return new FileInputStream(QUERY_DIR + fileName);
     }
 
+    /**
+     * Test SOAP message body removal
+     * @throws Exception when error occurs
+     */
     @Test
     public void removingBody() throws Exception {
         SoapMessageImpl query = createRequest("simple.query");
-        final boolean CLIENT_SIDE = true;
-        final boolean SERVER_SIDE = false;
-        final String REQUEST_NAME = "testQuery";
-        final String RESPONSE_NAME = REQUEST_NAME + "Response";
-        final boolean KEEP_BODY = true;
-        final boolean REMOVE_BODY = false;
+        final boolean clientSide = true;
+        final boolean serverSide = false;
+        final String requestName = "testQuery";
+        final String responseName = requestName + "Response";
+        final boolean keepBody = true;
+        final boolean removeBody = false;
 
-        assertNodeEmptinessAfterManipulation(query, CLIENT_SIDE, REQUEST_NAME, KEEP_BODY);
-        assertNodeEmptinessAfterManipulation(query, CLIENT_SIDE, REQUEST_NAME, REMOVE_BODY);
+        assertNodeEmptinessAfterManipulation(query, clientSide, requestName, keepBody);
+        assertNodeEmptinessAfterManipulation(query, clientSide, requestName, removeBody);
 
         SoapMessageImpl answer = createResponse("simple.answer");
 
-        assertNodeEmptinessAfterManipulation(answer, CLIENT_SIDE, RESPONSE_NAME, KEEP_BODY);
-        assertNodeEmptinessAfterManipulation(answer, CLIENT_SIDE, RESPONSE_NAME, REMOVE_BODY);
+        assertNodeEmptinessAfterManipulation(answer, clientSide, responseName, keepBody);
+        assertNodeEmptinessAfterManipulation(answer, clientSide, responseName, removeBody);
 
         // and test server side as well
-        assertNodeEmptinessAfterManipulation(query, SERVER_SIDE, REQUEST_NAME, KEEP_BODY);
-        assertNodeEmptinessAfterManipulation(query, SERVER_SIDE, REQUEST_NAME, REMOVE_BODY);
-        assertNodeEmptinessAfterManipulation(answer, SERVER_SIDE, RESPONSE_NAME, KEEP_BODY);
-        assertNodeEmptinessAfterManipulation(answer, SERVER_SIDE, RESPONSE_NAME, REMOVE_BODY);
+        assertNodeEmptinessAfterManipulation(query, serverSide, requestName, keepBody);
+        assertNodeEmptinessAfterManipulation(query, serverSide, requestName, removeBody);
+        assertNodeEmptinessAfterManipulation(answer, serverSide, responseName, keepBody);
+        assertNodeEmptinessAfterManipulation(answer, serverSide, responseName, removeBody);
     }
 
     /**
@@ -148,7 +181,8 @@ public class SoapMessageBodyManipulatorTest {
                                                      boolean clientSide,
                                                      String elementName,
                                                      boolean keepBody) throws Exception {
-        String loggableMessage = new TestableSoapMessageBodyManipulator(keepBody).getLoggableMessageText(query, clientSide);
+        String loggableMessage = new TestableSoapMessageBodyManipulator(keepBody)
+                .getLoggableMessageText(query, clientSide);
         log.debug("loggable message with body"
                 + (keepBody ? " intact: " : " removed: ")
                 + loggableMessage);
@@ -177,6 +211,10 @@ public class SoapMessageBodyManipulatorTest {
                 new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
     }
 
+    /**
+     * Test client id search
+     * @throws Exception when error occurs
+     */
     @Test
     public void clientIdSearching() throws Exception {
         SoapMessageBodyManipulator manipulator = new SoapMessageBodyManipulator();

@@ -22,23 +22,6 @@
  */
 package ee.ria.xroad.proxy.clientproxy;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.CodedExceptionWithHttpStatus;
 import ee.ria.xroad.common.ErrorCodes;
@@ -57,6 +40,21 @@ import ee.ria.xroad.common.util.MimeTypes;
 import ee.ria.xroad.proxy.messagelog.LogRecordManager;
 import ee.ria.xroad.proxy.messagelog.MessageLog;
 import ee.ria.xroad.proxy.util.MessageProcessorBase;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static ee.ria.xroad.common.metadata.MetadataRequests.ASIC;
 import static ee.ria.xroad.common.metadata.MetadataRequests.VERIFICATIONCONF;
@@ -195,9 +193,27 @@ class AsicContainerClientRequestProcessor extends MessageProcessorBase {
 
         boolean requestOnly = hasParameter(PARAM_REQUEST_ONLY);
         boolean responseOnly = hasParameter(PARAM_RESPONSE_ONLY);
+
+        if (requestOnly && responseOnly) {
+            throw new CodedExceptionWithHttpStatus(HttpServletResponse.SC_BAD_REQUEST, ErrorCodes.X_BAD_REQUEST,
+                    INVALID_PARAM_COMBINATION_FAULT_MESSAGE);
+        }
+
         boolean unique = hasParameter(PARAM_UNIQUE);
 
-        if (!requestOnly && !responseOnly) {
+        if (requestOnly) {
+            if (unique) {
+                writeAsicContainer(clientId, queryId, nameGen, false);
+            } else {
+                writeRequestContainers(clientId, queryId, nameGen);
+            }
+        } else if (responseOnly) {
+            if (unique) {
+                writeAsicContainer(clientId, queryId, nameGen, true);
+            } else {
+                writeResponseContainers(clientId, queryId, nameGen);
+            }
+        } else {
             if (!unique) {
                 writeAllContainers(clientId, queryId, nameGen);
             } else {
@@ -206,23 +222,6 @@ class AsicContainerClientRequestProcessor extends MessageProcessorBase {
                         ErrorCodes.X_BAD_REQUEST,
                         MISSING_CONSTRAINT_FAULT_MESSAGE);
             }
-        } else if (requestOnly && !responseOnly) {
-            if (unique) {
-                writeAsicContainer(clientId, queryId, nameGen, false);
-            } else {
-                writeRequestContainers(clientId, queryId, nameGen);
-            }
-        } else if (responseOnly && !requestOnly) {
-            if (unique) {
-                writeAsicContainer(clientId, queryId, nameGen, true);
-            } else {
-                writeResponseContainers(clientId, queryId, nameGen);
-            }
-        } else {
-            throw new CodedExceptionWithHttpStatus(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    ErrorCodes.X_BAD_REQUEST,
-                    INVALID_PARAM_COMBINATION_FAULT_MESSAGE);
         }
     }
 
@@ -415,7 +414,7 @@ class AsicContainerClientRequestProcessor extends MessageProcessorBase {
         private final String instanceIdentifier;
         private final ZipOutputStream zos;
 
-        public VerificationConfWriter(String instanceIdentifier,
+        VerificationConfWriter(String instanceIdentifier,
                 OutputStream out) {
             this.instanceIdentifier = instanceIdentifier;
             zos = new ZipOutputStream(out);

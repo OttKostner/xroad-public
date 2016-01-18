@@ -172,6 +172,7 @@ sh /usr/share/xroad/scripts/xroad-proxy-setup.sh
 %systemd_postun_with_restart xroad-proxy.service
 %systemd_postun_with_restart xroad-async.service
 %systemd_postun_with_restart xroad-confclient.service
+%systemd_postun_with_restart xroad-jetty9.service
 
 %changelog
 

@@ -44,6 +44,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class CertUtilsTest {
 
+    /**
+     * Setup test
+     * @throws IOException when error occurs
+     */
     @Before
     public void before() throws IOException {
         final String pkcsPath = "src/test/resources/internal.p12";
@@ -53,6 +57,12 @@ public class CertUtilsTest {
         }
     }
 
+    /**
+     * Test generate certificate request
+     * @throws NoSuchAlgorithmException when algorithm is not available
+     * @throws OperatorCreationException when operator cannot be created
+     * @throws IOException when I/O error occurs
+     */
     @Test
     public void testGenerateCertRequest() throws NoSuchAlgorithmException, OperatorCreationException, IOException {
         KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
@@ -64,6 +74,12 @@ public class CertUtilsTest {
         assertTrue(certRequest != null && certRequest.length > 0);
     }
 
+    /**
+     * Test reading a keypair from file
+     * @throws NoSuchAlgorithmException when algorithm is not available
+     * @throws IOException when I/O error occurs
+     * @throws InvalidKeySpecException when keypair is invalid
+     */
     @Test
     public void testReadKeyPair() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
         KeyPair keyPair = CertUtils.readKeyPairFromPemFile("src/test/resources/internal.key");
@@ -72,6 +88,11 @@ public class CertUtilsTest {
         assertNotNull(keyPair.getPublic());
     }
 
+    /**
+     * Test reading certificate from file
+     * @throws CertificateException when certificate is invalid
+     * @throws IOException when I/O error occurs
+     */
     @Test
     public void testReadCertificate() throws CertificateException, IOException {
         X509Certificate certificate = CertUtils.readCertificate("src/test/resources/internal.crt");
@@ -79,6 +100,10 @@ public class CertUtilsTest {
         assertEquals(certificate.getSubjectDN().getName(), "CN=ubuntu-xroad-securityserver-dev");
     }
 
+    /**
+     * Test creating pkcs12 keystore
+     * @throws Exception when error occurs
+     */
     @Test
     public void testCreatePkcs12() throws Exception {
         final String pkcsPath = "src/test/resources/internal.p12";

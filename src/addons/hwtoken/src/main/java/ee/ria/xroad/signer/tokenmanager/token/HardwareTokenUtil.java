@@ -22,6 +22,10 @@
  */
 package ee.ria.xroad.signer.tokenmanager.token;
 
+import ee.ria.xroad.common.SystemProperties;
+import ee.ria.xroad.common.util.CryptoUtils;
+import ee.ria.xroad.signer.protocol.dto.TokenStatusInfo;
+import ee.ria.xroad.signer.tokenmanager.module.ModuleInstanceProvider;
 import iaik.pkcs.pkcs11.Module;
 import iaik.pkcs.pkcs11.Session;
 import iaik.pkcs.pkcs11.TokenException;
@@ -32,17 +36,10 @@ import iaik.pkcs.pkcs11.objects.X509PublicKeyCertificate;
 import iaik.pkcs.pkcs11.wrapper.PKCS11Constants;
 import iaik.pkcs.pkcs11.wrapper.PKCS11Exception;
 
+import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.DatatypeConverter;
-
-import ee.ria.xroad.common.SystemProperties;
-import ee.ria.xroad.common.util.CryptoUtils;
-import ee.ria.xroad.signer.protocol.dto.TokenStatusInfo;
-import ee.ria.xroad.signer.tokenmanager.module.ModuleInstanceProvider;
-import ee.ria.xroad.signer.util.SignerUtil;
 
 /**
  * Utility methods for hardware token.

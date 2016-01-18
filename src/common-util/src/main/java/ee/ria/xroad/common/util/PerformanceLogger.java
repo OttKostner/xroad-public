@@ -61,7 +61,7 @@ public final class PerformanceLogger {
             long now = System.currentTimeMillis();
 
             logger.trace("PERFORMANCE: {}: {}: {}",
-                    new Object[] {now , now - startMillis, message});
+                    new Object[] {now, now - startMillis, message});
         }
     }
 }

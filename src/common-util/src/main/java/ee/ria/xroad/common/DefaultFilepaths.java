@@ -122,6 +122,7 @@ public final class DefaultFilepaths {
      * and returns its path. The new file is created in the same directory
      * as the file whose path is given as parameter
      * @return path to the created temporary file
+     * @param fileName file whose path will be used
      * @throws IOException if an error occurs
      */
     public static Path createTempFileInSameDir(String fileName)

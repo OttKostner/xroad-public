@@ -1,5 +1,5 @@
 <?xml version="1.0"?><!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-  "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
     <!-- Checks whether files end with a new line.                        -->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
@@ -29,9 +29,15 @@
     <module name="TreeWalker">
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
+
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
-            <!--<property name="allowMissingPropertyJavadoc" value="true"/>-->
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingThrowsTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="minLineCount" value="2"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="allowThrowsTagsForSubclasses" value="true"/>
         </module>
 
         <module name="JavadocType">
@@ -54,8 +60,7 @@
         <module name="StaticVariableName"/>
         <module name="TypeName"/>
         <!-- Checks for imports                              -->
-        <!-- See http://checkstyle.sf.net/config_import.html -->
-        <!--<module name="AvoidStarImport"/>-->
+        <!-- http://checkstyle.sourceforge.net/config_imports.html -->
         <module name="IllegalImport"/>
         <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
@@ -83,7 +88,7 @@
         <module name="WhitespaceAround"/>
 
         <!-- Modifier Checks                                    -->
-        <!-- See http://checkstyle.sf.net/config_modifiers.html -->
+        <!-- See http://checkstyle.sf.net/config_modifier.html -->
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
 
@@ -120,6 +125,6 @@
     <!-- Some checks are disabled for specific source sets (i.e. tests)-->
     <module name="SuppressionFilter">
         <property name="file" value="${config_loc}/checkstyle-suppressions.xml"
-            default="checkstyle-suppressions.xml"/>
+                  default="checkstyle-suppressions.xml"/>
     </module>
 </module>

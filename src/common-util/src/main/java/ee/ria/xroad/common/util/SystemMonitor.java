@@ -51,8 +51,7 @@ public final class SystemMonitor implements StartStop {
             LoggerFactory.getLogger(SystemMonitor.class);
 
     private static final String LOG_FILE = "system-monitor.log";
-    private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("HH:mm:ss.SSS");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
     private static final String ROW_FORMAT = "%-12s | ";
 
     private static final int QUERY_INTERVAL = 5000;
@@ -137,7 +136,7 @@ public final class SystemMonitor implements StartStop {
             columns.add(new LogColumn("Time") {
                 @Override
                 String getValue() {
-                    return DATE_FORMAT.format(new Date());
+                    return dateFormat.format(new Date());
                 }
             });
 

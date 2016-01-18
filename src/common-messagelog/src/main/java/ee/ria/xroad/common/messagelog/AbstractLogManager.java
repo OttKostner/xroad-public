@@ -23,9 +23,7 @@
 package ee.ria.xroad.common.messagelog;
 
 import akka.actor.UntypedActor;
-import ee.ria.xroad.common.DiagnosticsErrorCodes;
 import ee.ria.xroad.common.DiagnosticsStatus;
-import ee.ria.xroad.common.DiagnosticsUtils;
 import ee.ria.xroad.common.message.SoapMessageImpl;
 import ee.ria.xroad.common.signature.SignatureData;
 import ee.ria.xroad.common.util.JobManager;
@@ -33,6 +31,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for log manager actors.
@@ -41,7 +41,7 @@ import java.util.Date;
 public abstract class AbstractLogManager extends UntypedActor {
 
     @Getter
-    protected static DiagnosticsStatus status = new DiagnosticsStatus(DiagnosticsErrorCodes.ERROR_CODE_TIMESTAMP_UNINITIALIZED, null);
+    protected static Map<String, DiagnosticsStatus> statusMap = new HashMap<>();
 
     protected AbstractLogManager(JobManager jobManager) {
         if (jobManager == null) {
@@ -65,11 +65,10 @@ public abstract class AbstractLogManager extends UntypedActor {
                 try {
                     TimestampMessage m = (TimestampMessage) message;
                     TimestampRecord result = timestamp(m.getMessageRecordId());
-                    status.setReturnCodeNow(DiagnosticsErrorCodes.RETURN_SUCCESS);
+                    log.info("message: {}, result: {}", message, result);
                     getSender().tell(result, getSelf());
                 } catch (Exception e) {
                     log.info("Timestamp failed: {}", e);
-                    status.setReturnCodeNow(DiagnosticsUtils.getErrorCode(e));
                     getSender().tell(e, getSelf());
                 }
 

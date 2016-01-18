@@ -111,8 +111,8 @@ subprojects {
         toolVersion = "6.1.1"
         configFile = new File(rootDir, "doc/checkstyle-ria.xml")
         configProperties.config_loc = "$rootDir/doc"
-        ignoreFailures = true
-        showViolations = false
+        ignoreFailures = false
+        showViolations = true
     }
 
     pmd {

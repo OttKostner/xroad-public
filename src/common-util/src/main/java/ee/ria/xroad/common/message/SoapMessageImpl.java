@@ -22,18 +22,11 @@
  */
 package ee.ria.xroad.common.message;
 
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import ee.ria.xroad.common.identifier.CentralServiceId;
 import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.identifier.ServiceId;
 
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import javax.xml.soap.SOAPMessage;
 
 import static ee.ria.xroad.common.message.SoapUtils.isResponseMessage;
 import static ee.ria.xroad.common.message.SoapUtils.isRpcMessage;

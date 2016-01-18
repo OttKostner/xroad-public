@@ -24,8 +24,6 @@ package ee.ria.xroad.common.signature;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * Encapsulates the created signature XML and possible hash chain.
  */

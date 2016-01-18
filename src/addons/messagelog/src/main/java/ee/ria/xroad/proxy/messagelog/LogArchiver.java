@@ -260,7 +260,7 @@ public class LogArchiver extends UntypedActor {
         } catch (Exception e) {
             log.error(
                     "Failed to execute archive transfer command '{}'",
-                    transferCommand);
+                    transferCommand, e);
         }
     }
 

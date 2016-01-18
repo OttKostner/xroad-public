@@ -119,7 +119,7 @@ public class HardwareTokenWorker extends AbstractTokenWorker {
         try {
             closeActiveSession();
         } catch (Exception e) {
-            log.warn("Failed to close active session: {}", e.getMessage());
+            log.warn("Failed to close active session", e);
         }
     }
 
@@ -168,6 +168,7 @@ public class HardwareTokenWorker extends AbstractTokenWorker {
 
                 login();
             } catch (Exception e) {
+                log.warn("Token login failed", e);
                 throw loginFailed(e.getMessage());
             }
         } else { // logout
@@ -175,6 +176,7 @@ public class HardwareTokenWorker extends AbstractTokenWorker {
             try {
                 logout();
             } catch (Exception e) {
+                log.warn("Token logout failed", e);
                 throw logoutFailed(e.getMessage());
             }
         }
@@ -319,6 +321,7 @@ public class HardwareTokenWorker extends AbstractTokenWorker {
             try {
                 login();
             } catch (Exception e) {
+                log.warn("Login failed", e);
                 throw loginFailed(e.getMessage());
             }
         }

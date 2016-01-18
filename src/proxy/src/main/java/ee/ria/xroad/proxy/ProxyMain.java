@@ -43,14 +43,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import scala.concurrent.Await;
 
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_PROXY;
@@ -212,20 +210,40 @@ public final class ProxyMain {
                 try {
                     log.info("/timestampstatus");
 
-                    DiagnosticsStatus result = checkConnectionToTimestampUrl();
+                    Map<String, DiagnosticsStatus> result = checkConnectionToTimestampUrl();
                     log.info("result {}", result);
 
                     ActorSelection logManagerSelection = actorSystem.actorSelection("/user/LogManager");
 
                     Timeout timeout = new Timeout(CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                    DiagnosticsStatus statusFromLogManager = (DiagnosticsStatus) Await.result(Patterns.ask(logManagerSelection, CommonMessages.TIMESTAMP_STATUS, timeout),
-                            timeout.duration());
+                    Map<String, DiagnosticsStatus> statusFromLogManager = (Map<String, DiagnosticsStatus>) Await.result(
+                            Patterns.ask(
+                                    logManagerSelection, CommonMessages.TIMESTAMP_STATUS, timeout),
+                                    timeout.duration());
 
-                    log.info("statusFromLogManager {}", statusFromLogManager);
-                    if (DiagnosticsErrorCodes.RETURN_SUCCESS != statusFromLogManager.getReturnCode() && DiagnosticsErrorCodes.ERROR_CODE_TIMESTAMP_UNINITIALIZED != statusFromLogManager.getReturnCode() && DiagnosticsErrorCodes.RETURN_SUCCESS != result.getReturnCode()) {
-                        result = statusFromLogManager;
-                        log.info("statusFromLogManager not success {}", statusFromLogManager);
+                    log.info("statusFromLogManager {}", statusFromLogManager.toString());
+
+                    // Use the status either from simple connection check or from LogManager.
+                    for (String key : result.keySet()) {
+                        // If status exists in LogManager for given timestamp server, and it is successful or if
+                        // simple connection check status is unsuccesful, use the status from LogManager
+                        if (statusFromLogManager.get(key) != null
+                                && (DiagnosticsErrorCodes.RETURN_SUCCESS == statusFromLogManager.get(key)
+                                .getReturnCode() && DiagnosticsErrorCodes.RETURN_SUCCESS == result.get(key)
+                                .getReturnCode()
+                                || DiagnosticsErrorCodes.RETURN_SUCCESS != result.get(key).getReturnCode()
+                                && DiagnosticsErrorCodes.RETURN_SUCCESS != statusFromLogManager.get(key)
+                                .getReturnCode())) {
+                            result.put(key, statusFromLogManager.get(key));
+                            log.info("Using time stamping status from LogManager for url {} "
+                                    + "status: {}", key,
+                                    statusFromLogManager.get(key));
+                        } else if (statusFromLogManager.get(key) == null && DiagnosticsErrorCodes.RETURN_SUCCESS
+                                == result.get(key).getReturnCode()) {
+                            result.get(key).setReturnCodeNow(DiagnosticsErrorCodes.ERROR_CODE_TIMESTAMP_UNINITIALIZED);
+                        }
                     }
+
 
                     JsonUtils.getSerializer().toJson(result, getParams().response.getWriter());
 
@@ -238,11 +256,12 @@ public final class ProxyMain {
         return adminPort;
     }
 
-    private static DiagnosticsStatus checkConnectionToTimestampUrl() {
+    private static Map<String, DiagnosticsStatus> checkConnectionToTimestampUrl() {
 
-        DiagnosticsStatus status = null;
-        try {
-            for (String tspUrl: ServerConf.getTspUrl()) {
+        Map<String, DiagnosticsStatus> statuses = new HashMap<String, DiagnosticsStatus>();
+        for (String tspUrl: ServerConf.getTspUrl()) {
+            try {
+
                 URL url = new URL(tspUrl);
                 log.info("Checking timestamp server status for url {}", url);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -251,21 +270,25 @@ public final class ProxyMain {
                 con.setDoInput(true);
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-type", "application/timestamp-query");
-                OutputStream out = con.getOutputStream();
+                con.connect();
+                log.info("Checking timestamp server con {}", con);
 
                 if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    status = new DiagnosticsStatus(DiagnosticsErrorCodes.ERROR_CODE_NO_NETWORK_CONNECTION, LocalTime.now());
-                    log.warn("Timestamp status check failed {}", con.getErrorStream());
-                    log.warn("Received HTTP error: {} - {}", con.getResponseCode(), con.getResponseMessage());
+                    log.warn("Timestamp check received HTTP error: {} - {}. Might still be ok", con.getResponseCode(),
+                            con.getResponseMessage());
+                    statuses.put(tspUrl, new DiagnosticsStatus(DiagnosticsErrorCodes.RETURN_SUCCESS, LocalTime.now(),
+                            tspUrl));
                 } else {
-                    status = new DiagnosticsStatus(DiagnosticsErrorCodes.RETURN_SUCCESS, LocalTime.now());
+                    statuses.put(tspUrl, new DiagnosticsStatus(DiagnosticsErrorCodes.RETURN_SUCCESS, LocalTime.now(),
+                            tspUrl));
                 }
+
+            } catch (Exception e) {
+                log.warn("Timestamp status check failed {}", e);
+                statuses.put(tspUrl, new DiagnosticsStatus(DiagnosticsUtils.getErrorCode(e), LocalTime.now(), tspUrl));
             }
-        } catch (Exception e) {
-            log.warn("Timestamp status check failed {}", e);
-            status = new DiagnosticsStatus(DiagnosticsUtils.getErrorCode(e), LocalTime.now());
         }
-        return status;
+        return statuses;
 
     }
 

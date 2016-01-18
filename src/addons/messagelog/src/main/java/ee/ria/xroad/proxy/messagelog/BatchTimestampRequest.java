@@ -40,6 +40,7 @@ class BatchTimestampRequest extends AbstractTimestampRequest {
     private String hashChainResult = null;
     private String[] hashChains = null;
 
+
     BatchTimestampRequest(Long[] logRecords, String[] signatureHashes) {
         super(logRecords);
 
@@ -55,10 +56,10 @@ class BatchTimestampRequest extends AbstractTimestampRequest {
     }
 
     @Override
-    Object result(TimeStampResponse tsResponse) throws Exception {
+    Object result(TimeStampResponse tsResponse, String url) throws Exception {
         byte[] timestampDer = getTimestampDer(tsResponse);
         return new Timestamper.TimestampSucceeded(logRecords, timestampDer,
-                hashChainResult, hashChains);
+                hashChainResult, hashChains, url);
     }
 
     private HashChainBuilder buildHashChain(String[] hashes) throws Exception {

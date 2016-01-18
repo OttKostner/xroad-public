@@ -66,20 +66,20 @@ public class AdminPort implements StartStop {
      */
     @Getter
     @Setter
-    public static abstract class AdminPortCallback implements Runnable {
+    public abstract static class AdminPortCallback implements Runnable {
         private JettyHandlerParams params;
     }
 
     /**
      * Asynchronous AdminPort callback interface.
      */
-    public static abstract class AsynchronousCallback extends AdminPortCallback {
+    public abstract static class AsynchronousCallback extends AdminPortCallback {
     }
 
     /**
      * Synchronous AdminPort callback interface.
      */
-    public static abstract class SynchronousCallback extends AdminPortCallback {
+    public abstract static class SynchronousCallback extends AdminPortCallback {
     }
 
     public static final String REQUEST_STOP = "/stop";
@@ -186,8 +186,8 @@ public class AdminPort implements StartStop {
             LOG.info("Admin request: {}", target);
             try {
                 AdminPortCallback handler = handlers.get(target);
-                handler.setParams(new JettyHandlerParams(target, baseRequest, request, response));
                 if (handler != null) {
+                    handler.setParams(new JettyHandlerParams(target, baseRequest, request, response));
                     if (handler instanceof SynchronousCallback) {
                         handler.run();
                     } else {

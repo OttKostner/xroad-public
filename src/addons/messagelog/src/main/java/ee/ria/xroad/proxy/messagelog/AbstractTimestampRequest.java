@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,29 +55,41 @@ abstract class AbstractTimestampRequest {
 
     abstract byte[] getRequestData() throws Exception;
 
-    abstract Object result(TimeStampResponse tsResponse) throws Exception;
+    abstract Object result(TimeStampResponse tsResponse, String url) throws Exception;
 
     Object execute(List<String> tspUrls) throws Exception {
         TimeStampRequest tsRequest = createTimestampRequest(getRequestData());
 
-        InputStream tsIn = makeTsRequest(tsRequest, tspUrls);
-        if (tsIn == null) {
+        TsRequest req = makeTsRequest(tsRequest, tspUrls);
+        if (req.getInputStream() == null) {
             throw new RuntimeException("Could not get response from TSP");
         }
 
-        TimeStampResponse tsResponse = getTimestampResponse(tsIn);
+        TimeStampResponse tsResponse = getTimestampResponse(req.getInputStream());
+        log.info("tsresponse {}", tsResponse);
         verify(tsRequest, tsResponse);
 
-        return result(tsResponse);
+        return result(tsResponse, req.getUrl());
     }
 
-    protected InputStream makeTsRequest(TimeStampRequest request,
+    @Getter
+    public static class TsRequest {
+        private final InputStream inputStream;
+        private final String url;
+
+        TsRequest(final InputStream inputStream, final String url) {
+            this.inputStream = inputStream;
+            this.url = url;
+        }
+    }
+
+    protected TsRequest makeTsRequest(TimeStampRequest request,
             List<String> tspUrls) throws Exception {
         for (String url: tspUrls) {
             try {
                 log.debug("Sending time-stamp request to {}", url);
 
-                return TimestamperUtil.makeTsRequest(request, url);
+                return new TsRequest(TimestamperUtil.makeTsRequest(request, url), url);
             } catch (Exception ex) {
                 log.error("Failed to get time stamp from " + url, ex);
             }

@@ -36,9 +36,10 @@ import static ee.ria.xroad.common.util.CertUtils.getRDNValue;
 
 /**
  * Helper class for decoding ClientId from Finnish X-Road instance signing certificates.
- * Created by hyoty on 25.8.2015.
  */
 public final class FISubjectClientIdDecoder {
+
+    public static final int NUM_COMPONENTS = 3;
 
     private FISubjectClientIdDecoder() {
         //utility class
@@ -52,7 +53,7 @@ public final class FISubjectClientIdDecoder {
         X500Principal principal = cert.getSubjectX500Principal();
         X500Name x500name = new X500Name(principal.getName());
 
-        if ( getRDNValue(x500name, BCStyle.SERIALNUMBER) == null ) {
+        if (getRDNValue(x500name, BCStyle.SERIALNUMBER) == null) {
             return parseClientIdFromLegacyName(x500name);
         }
         return parseClientId(x500name);
@@ -68,11 +69,11 @@ public final class FISubjectClientIdDecoder {
      * </ul>
      */
 
-    private static final Pattern splitPattern = Pattern.compile("/");
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("/");
 
     private static ClientId parseClientId(X500Name x500name) {
         String c = getRDNValue(x500name, BCStyle.C);
-        if (! "FI".equals(c) ) {
+        if (!"FI".equals(c)) {
             throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
                     "Certificate subject name does not contain valid country code");
         }
@@ -94,8 +95,8 @@ public final class FISubjectClientIdDecoder {
                     "Certificate subject name does not contain serial number");
         }
 
-        final String[] components = splitPattern.split(serialNumber);
-        if ( components.length != 3 ) {
+        final String[] components = SPLIT_PATTERN.split(serialNumber);
+        if (components.length != NUM_COMPONENTS) {
             throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
                     "Certificate subject name's attribute serialNumber has invalid value");
         }
@@ -120,7 +121,7 @@ public final class FISubjectClientIdDecoder {
      */
     private static ClientId parseClientIdFromLegacyName(X500Name x500name) {
         String c = getRDNValue(x500name, BCStyle.C);
-        if (! "FI".equals(c) ) {
+        if (!"FI".equals(c)) {
             throw new CodedException(ErrorCodes.X_INCORRECT_CERTIFICATE,
                     "Certificate subject name does not contain valid country code");
         }

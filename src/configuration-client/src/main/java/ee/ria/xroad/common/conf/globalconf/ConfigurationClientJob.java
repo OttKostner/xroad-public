@@ -50,7 +50,8 @@ public class ConfigurationClientJob implements Job {
                         LocalTime.now().plusSeconds(SystemProperties.getConfigurationClientUpdateIntervalSeconds()));
                 context.setResult(status);
             } catch (Exception e) {
-                DiagnosticsStatus status = new DiagnosticsStatus(ConfigurationClientUtils.getErrorCode(e), LocalTime.now(),
+                DiagnosticsStatus status = new DiagnosticsStatus(ConfigurationClientUtils.getErrorCode(e),
+                        LocalTime.now(),
                         LocalTime.now().plusSeconds(SystemProperties.getConfigurationClientUpdateIntervalSeconds()));
                 context.setResult(status);
                 throw new JobExecutionException(e);

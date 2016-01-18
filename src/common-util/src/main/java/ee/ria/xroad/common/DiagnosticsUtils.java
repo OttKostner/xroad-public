@@ -32,8 +32,16 @@ import static ee.ria.xroad.common.ErrorCodes.*;
 /**
  * Utilities for configuration client module
  */
-public class DiagnosticsUtils {
+public final class DiagnosticsUtils {
 
+    private DiagnosticsUtils() {
+    }
+
+    /**
+     * Translate exception to error code
+     * @param e exception
+     * @return error code
+     */
     public static int getErrorCode(Exception e) {
         if (e instanceof CodedException) {
             CodedException ce = (CodedException) e;
