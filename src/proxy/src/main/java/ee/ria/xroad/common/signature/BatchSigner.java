@@ -25,6 +25,7 @@ package ee.ria.xroad.common.signature;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -63,7 +64,7 @@ import static ee.ria.xroad.common.util.CryptoUtils.*;
 @Slf4j
 public class BatchSigner extends UntypedActor {
 
-    private static final Timeout DEFAULT_TIMEOUT = new Timeout(30000);
+    private static final Timeout DEFAULT_TIMEOUT = new Timeout(30000, TimeUnit.MILLISECONDS);
 
     // Holds the actor instance, which sends and receives messages.
     private static ActorRef instance;

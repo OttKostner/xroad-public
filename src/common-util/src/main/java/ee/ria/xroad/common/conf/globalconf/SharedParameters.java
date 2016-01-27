@@ -87,6 +87,7 @@ public class SharedParameters extends AbstractXmlConf<SharedParametersType> {
             new HashMap<>();
     private final List<X509Certificate> verificationCaCerts = new ArrayList<>();
     private final Set<String> knownAddresses = new HashSet<>();
+    private final Map<SecurityServerId, SecurityServerType> securityServersById = new HashMap<>();
 
     SharedParameters() {
         super(ObjectFactory.class, SharedParametersSchemaValidator.class);
@@ -206,6 +207,7 @@ public class SharedParameters extends AbstractXmlConf<SharedParametersType> {
         securityServerClients.clear();
         verificationCaCerts.clear();
         knownAddresses.clear();
+        securityServersById.clear();
     }
 
     private void cacheCaCerts() throws CertificateException, IOException {
@@ -264,6 +266,13 @@ public class SharedParameters extends AbstractXmlConf<SharedParametersType> {
             // Add owner of the security server.
             MemberType owner = (MemberType) securityServer.getOwner();
             addServerClient(createMemberId(owner), securityServer);
+
+            // cache security server information by serverId
+            SecurityServerId securityServerId = SecurityServerId.create(
+                    confType.getInstanceIdentifier(),
+                    owner.getMemberClass().getCode(),
+                    owner.getMemberCode(), securityServer.getServerCode());
+            securityServersById.put(securityServerId, securityServer);
 
             // Add clients of the security server.
             for (JAXBElement<?> client : securityServer.getClient()) {

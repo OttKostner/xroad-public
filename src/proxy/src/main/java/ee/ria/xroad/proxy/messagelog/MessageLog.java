@@ -59,6 +59,7 @@ public final class MessageLog {
 
     private static final String LOG_MANAGER_IMPL_CLASS =
             SystemProperties.PREFIX + "proxy.messageLogManagerImpl";
+    public static final String CONTROL_AWARE_DISPATCHER = "akka.control-aware-dispatcher";
 
     private static ActorRef logManager;
 
@@ -67,6 +68,7 @@ public final class MessageLog {
 
     /**
      * Initializes the secure log using the provided actor system.
+     * Use control aware mailbox.
      *
      * @param actorSystem the actor system
      * @param jobManager the job manager
@@ -77,7 +79,8 @@ public final class MessageLog {
         Class<? extends AbstractLogManager> clazz = getLogManagerImpl();
         log.trace("Using implementation class: {}", clazz);
 
-        logManager = actorSystem.actorOf(Props.create(clazz, jobManager),
+        logManager = actorSystem.actorOf(Props.create(clazz, jobManager).
+                        withDispatcher(CONTROL_AWARE_DISPATCHER),
                 LOG_MANAGER);
     }
 

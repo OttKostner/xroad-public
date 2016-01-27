@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ee.ria.xroad.common.identifier.SecurityServerId;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -57,6 +58,9 @@ public class SoapHeader {
 
     @XmlElement(name = "centralService", required = false, namespace = NS_XROAD)
     private CentralServiceId centralService;
+
+    @XmlElement(name = "securityServer", required = false, namespace = NS_XROAD)
+    private SecurityServerId securityServer;
 
     @CheckConsistency
     @XmlElement(name = "userId", required = false, namespace = NS_XROAD)

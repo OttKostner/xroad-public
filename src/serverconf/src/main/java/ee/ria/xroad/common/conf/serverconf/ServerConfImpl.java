@@ -128,8 +128,7 @@ public class ServerConfImpl implements ServerConfProvider {
     }
 
     @Override
-    public List<ServiceId> getAllowedServices(ClientId serviceProvider,
-            ClientId client) {
+    public List<ServiceId> getAllowedServices(ClientId serviceProvider, ClientId client) {
         return tx(session -> {
             List<ServiceId> allServices =
                     new ServiceDAOImpl().getServices(session, serviceProvider);
@@ -260,9 +259,9 @@ public class ServerConfImpl implements ServerConfProvider {
         return new WsdlDAOImpl().getWsdl(session, service);
     }
 
-    private boolean internalIsQueryAllowed(Session session, ClientId client,
-            ServiceId service) {
-        if (getService(session, service) == null || client == null) {
+    private boolean internalIsQueryAllowed(Session session, ClientId client, ServiceId service) {
+
+        if (client == null) {
             return false;
         }
 
@@ -312,8 +311,7 @@ public class ServerConfImpl implements ServerConfProvider {
                 .findFirst().isPresent();
     }
 
-    private LocalGroupType findLocalGroup(Session session, String groupCode,
-            ClientId groupOwnerId) {
+    private LocalGroupType findLocalGroup(Session session, String groupCode, ClientId groupOwnerId) {
         // No need to check for null because we already know the service
         // (and therefore the owner) exists.
         return getClient(session, groupOwnerId).getLocalGroup().stream()

@@ -30,7 +30,7 @@ dependencies {
 
     testCompile project(':common-test')
     testCompile project(':common-verifier').sourceSets.test.output
-    testCompile 'com.typesafe.akka:akka-testkit_2.11:2.3.14'
+    testCompile 'com.typesafe.akka:akka-testkit_2.11:2.4.1'
 
     xjc 'com.sun.xml.bind:jaxb-impl:2.2.6'
     xjc 'com.sun.xml.bind:jaxb-xjc:2.2.6'

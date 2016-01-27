@@ -365,7 +365,7 @@ class ApplicationController < BaseController
   def download_configuration
     logger.info("Starting globalconf download")
 
-    port = SystemProperties::getConfigurationClientPort() + 1
+    port = SystemProperties::getConfigurationClientAdminPort()
     uri = URI("http://localhost:#{port}/execute")
 
     begin

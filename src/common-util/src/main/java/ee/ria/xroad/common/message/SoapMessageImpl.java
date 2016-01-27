@@ -24,6 +24,7 @@ package ee.ria.xroad.common.message;
 
 import ee.ria.xroad.common.identifier.CentralServiceId;
 import ee.ria.xroad.common.identifier.ClientId;
+import ee.ria.xroad.common.identifier.SecurityServerId;
 import ee.ria.xroad.common.identifier.ServiceId;
 
 import javax.xml.soap.SOAPMessage;
@@ -68,6 +69,15 @@ public class SoapMessageImpl extends AbstractSoapMessage<SoapHeader> {
     public CentralServiceId getCentralService() {
         return getHeader().getCentralService();
     }
+
+    /**
+     * Gets the security server ID in the SOAP message header.
+     * @return SecurityServerId
+     */
+    public SecurityServerId getSecurityServer() {
+        return getHeader().getSecurityServer();
+    }
+
 
     /**
      * True if the SOAP message is marked as asynchronous.

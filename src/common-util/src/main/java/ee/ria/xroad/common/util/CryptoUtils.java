@@ -145,8 +145,10 @@ public final class CryptoUtils {
             new BcDigestCalculatorProvider();
 
     /** Verification builder instance. */
-    public static final JcaContentVerifierProviderBuilder VERIFICATION_BUILDER =
+    public static final JcaContentVerifierProviderBuilder BC_VERIFICATION_BUILDER =
             new JcaContentVerifierProviderBuilder().setProvider("BC");
+    public static final JcaContentVerifierProviderBuilder SUN_VERIFICATION_BUILDER =
+            new JcaContentVerifierProviderBuilder().setProvider("SunRsaSign");
 
     /** Holds the certificate factory instance. */
     public static final CertificateFactory CERT_FACTORY;
@@ -352,7 +354,13 @@ public final class CryptoUtils {
      */
     public static ContentVerifierProvider createDefaultContentVerifier(
             PublicKey key) throws OperatorCreationException {
-        return VERIFICATION_BUILDER.build(key);
+        if ("RSA" == key.getAlgorithm()) {
+            // SunRsaSign supports only RSA signatures but it is (for some reason) about 2x faster
+            // than the BC implementation
+            return SUN_VERIFICATION_BUILDER.build(key);
+        } else {
+            return BC_VERIFICATION_BUILDER.build(key);
+        }
     }
 
     /**

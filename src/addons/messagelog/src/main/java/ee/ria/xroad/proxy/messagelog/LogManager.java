@@ -33,6 +33,7 @@ import ee.ria.xroad.common.messagelog.*;
 import ee.ria.xroad.common.signature.SignatureData;
 import ee.ria.xroad.common.util.JobManager;
 import ee.ria.xroad.common.util.MessageSendingJob;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.quartz.JobDataMap;
@@ -62,8 +63,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public class LogManager extends AbstractLogManager {
 
-
-
     private static final Timeout TIMESTAMP_TIMEOUT =
             new Timeout(Duration.create(30, TimeUnit.SECONDS));
 
@@ -92,8 +91,12 @@ public class LogManager extends AbstractLogManager {
         createCleaner(jobManager);
     }
 
+    @Getter
+    private ActorRef taskQueueRef;
+
+
     private void createTaskQueue() {
-        getContext().actorOf(Props.create(getTaskQueueImpl(), this),
+        taskQueueRef = getContext().actorOf(Props.create(getTaskQueueImpl()),
                 TASK_QUEUE_NAME);
     }
 
@@ -101,7 +104,16 @@ public class LogManager extends AbstractLogManager {
         timestamper = getContext().actorOf(
                 Props.create(getTimestamperImpl()), TIMESTAMPER_NAME);
 
-        getContext().actorOf(Props.create(TimestamperJob.class));
+        getContext().actorOf(Props.create(TimestamperJob.class, getTimestamperJobInitialDelay()));
+    }
+
+    /**
+     * Can be overwritten in test classes if we want to make sure that timestamping
+     * does not start prematurely
+     * @return
+     */
+    protected FiniteDuration getTimestamperJobInitialDelay() {
+        return Duration.create(1, TimeUnit.SECONDS);
     }
 
     private void createArchiver(JobManager jobManager) {
@@ -122,7 +134,7 @@ public class LogManager extends AbstractLogManager {
 
     @Override
     protected void log(SoapMessageImpl message, SignatureData signature,
-            boolean clientSide) throws Exception {
+                       boolean clientSide) throws Exception {
         verifyCanLogMessage();
 
         MessageRecord logRecord = saveMessageRecord(message, signature,
@@ -146,16 +158,25 @@ public class LogManager extends AbstractLogManager {
 
     @Override
     protected LogRecord findByQueryId(String queryId, Date startTime,
-            Date endTime) throws Exception {
+                                      Date endTime) throws Exception {
         return logRecordManager.getByQueryId(queryId, startTime, endTime);
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
         try {
-            log.info("MessageLog.onReceive({})", message);
             if (message instanceof String && CommonMessages.TIMESTAMP_STATUS.equals(message)) {
                 getSender().tell(statusMap, getSelf());
+            } else if (message instanceof SetTimestampingStatusMessage) {
+                setTimestampingStatus((SetTimestampingStatusMessage) message);
+            } else if (message instanceof SaveTimestampedDataMessage) {
+                try {
+                    SaveTimestampedDataMessage data = (SaveTimestampedDataMessage) message;
+                    saveTimestampRecord(data.getTimestampSucceeded());
+                } catch (Exception e) {
+                    log.error("Failed to save time-stamp record to database", e);
+                    setTimestampFailed(new DateTime());
+                }
             } else {
                 super.onReceive(message);
             }
@@ -163,8 +184,6 @@ public class LogManager extends AbstractLogManager {
             getSender().tell(e, getSelf());
         }
     }
-
-
 
     // ------------------------------------------------------------------------
 
@@ -249,6 +268,9 @@ public class LogManager extends AbstractLogManager {
         return messageRecord;
     }
 
+    /**
+     * Only externally use this method from tests. Otherwise send message to this actor.
+     */
     protected TimestampRecord saveTimestampRecord(
             Timestamper.TimestampSucceeded message) throws Exception {
         log.trace("saveTimestampRecord()");
@@ -273,17 +295,31 @@ public class LogManager extends AbstractLogManager {
         return timestampFailed != null;
     }
 
-    synchronized void setTimestampFailed(DateTime atTime) {
+    private void setTimestampingStatus(SetTimestampingStatusMessage statusMessage) {
+        if (statusMessage.getStatus() == SetTimestampingStatusMessage.Status.SUCCESS) {
+            setTimestampSucceeded();
+        } else {
+            setTimestampFailed(statusMessage.getAtTime());
+        }
+    }
+
+    /**
+     * Only use this method externally from tests. Otherwise send message to this actor.
+     */
+    void setTimestampFailed(DateTime atTime) {
         if (timestampFailed == null) {
             timestampFailed = atTime;
         }
     }
 
-    synchronized void setTimestampSucceeded() {
+    /**
+     * Only use this method externally from tests. Otherwise send message to this actor.
+     */
+    void setTimestampSucceeded() {
         timestampFailed = null;
     }
 
-    synchronized void verifyCanLogMessage() {
+    void verifyCanLogMessage() {
         int period = getAcceptableTimestampFailurePeriodSeconds();
         if (period == 0) { // check disabled
             return;
@@ -304,7 +340,7 @@ public class LogManager extends AbstractLogManager {
     }
 
     void registerCronJob(JobManager jobManager, String actorName,
-            Object message, String cronExpression) {
+                         Object message, String cronExpression) {
         ActorSelection actor = getContext().actorSelection(actorName);
 
         JobDataMap jobData = MessageSendingJob.createJobData(actor, message);
@@ -334,10 +370,12 @@ public class LogManager extends AbstractLogManager {
         private static final int MIN_INTERVAL_SECONDS = 60;
         private static final int MAX_INTERVAL_SECONDS = 60 * 60 * 24;
 
-        private static final FiniteDuration INITIAL_DELAY =
-                Duration.create(1, TimeUnit.SECONDS);
-
+        private FiniteDuration initialDelay;
         private Cancellable tick;
+
+        public TimestamperJob(FiniteDuration initialDelay) {
+            this.initialDelay = initialDelay;
+        }
 
         @Override
         public void onReceive(Object message) throws Exception {
@@ -356,7 +394,7 @@ public class LogManager extends AbstractLogManager {
 
         @Override
         public void preStart() throws Exception {
-            schedule(INITIAL_DELAY);
+            schedule(initialDelay);
         }
 
         @Override

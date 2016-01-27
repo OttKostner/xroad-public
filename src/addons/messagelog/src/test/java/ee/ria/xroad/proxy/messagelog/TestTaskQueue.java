@@ -27,19 +27,21 @@ import java.util.concurrent.TimeUnit;
 
 import ee.ria.xroad.proxy.messagelog.Timestamper.TimestampFailed;
 import ee.ria.xroad.proxy.messagelog.Timestamper.TimestampSucceeded;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 class TestTaskQueue extends TaskQueue {
 
     private static CountDownLatch gate = new CountDownLatch(1);
     private static Object lastMessage;
 
-    TestTaskQueue(LogManager logManager) {
-        super(logManager);
+    TestTaskQueue() {
+        super();
     }
 
     public static void waitForMessage() throws Exception {
         try {
-            gate.await(5, TimeUnit.SECONDS);
+            boolean result = gate.await(5, TimeUnit.SECONDS);
         } finally {
             gate = new CountDownLatch(1);
         }
@@ -51,6 +53,7 @@ class TestTaskQueue extends TaskQueue {
 
     @Override
     protected void handleTimestampSucceeded(TimestampSucceeded message) {
+        log.info("handleTimestampSucceeded");
         super.handleTimestampSucceeded(message);
 
         lastMessage = message;
@@ -59,6 +62,7 @@ class TestTaskQueue extends TaskQueue {
 
     @Override
     protected void handleTimestampFailed(TimestampFailed message) {
+        log.info("handleTimestampSucceeded");
         super.handleTimestampFailed(message);
 
         lastMessage = message;

@@ -126,6 +126,13 @@ public interface GlobalConfProvider extends ConfProvider {
     Collection<String> getProviderAddress(ClientId serviceProvider);
 
     /**
+     * Returns address of the given security server
+     * @param serverId the security server identifier
+     * @return IP address converted to string, such as "192.168.2.2".
+     */
+    String getSecurityServerAddress(SecurityServerId serverId);
+
+    /**
      * Returns a list of OCSP responder addresses for the given member
      * certificate.
      * @param member the member certificate

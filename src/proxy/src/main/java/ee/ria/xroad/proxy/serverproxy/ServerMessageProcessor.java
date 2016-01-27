@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.Marshaller;
 import javax.xml.soap.SOAPMessage;
 
+import ee.ria.xroad.common.identifier.SecurityServerId;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -276,6 +277,12 @@ class ServerMessageProcessor extends MessageProcessorBase {
 
     private void verifyAccess() throws Exception {
         log.trace("verifyAccess()");
+
+        final SecurityServerId requestSecurityServer = requestMessage.getSoap().getSecurityServer();
+        if (requestSecurityServer != null && !ServerConf.getIdentifier().equals(requestSecurityServer)) {
+            throw new CodedException(X_INVALID_SECURITY_SERVER,
+                    "Invalid security server %s", requestSecurityServer);
+        }
 
         if (!ServerConf.serviceExists(requestServiceId)) {
             throw new CodedException(X_UNKNOWN_SERVICE,

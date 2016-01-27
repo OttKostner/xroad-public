@@ -253,7 +253,7 @@ public final class ConfigurationClientMain {
         client = createClient();
 
         int portNumber = SystemProperties.getConfigurationClientPort();
-        adminPort = new AdminPort(portNumber + 1);
+        adminPort = new AdminPort(SystemProperties.getConfigurationClientAdminPort());
 
         adminPort.addShutdownHook(new Runnable() {
             @Override

@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -53,7 +54,7 @@ public final class SignerUtil {
 
     private static final int RANDOM_ID_LENGTH = 20;
 
-    private static final Timeout DEFAULT_ASK_TIMEOUT = new Timeout(5000);
+    private static final Timeout DEFAULT_ASK_TIMEOUT = new Timeout(5000, TimeUnit.MILLISECONDS);
 
     private SignerUtil() {
     }

@@ -12,6 +12,7 @@ License:            MIT
 Requires:           xroad-proxy >= %version
 Requires:           xroad-addon-messagelog >= %version
 Requires:           xroad-addon-metaservices >= %version
+Requires:           xroad-addon-proxymonitor >= %version
 Conflicts:          xroad-centralserver
 
 %description

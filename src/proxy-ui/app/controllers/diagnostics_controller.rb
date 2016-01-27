@@ -80,7 +80,7 @@ class DiagnosticsController < ApplicationController
   def query_confclient_status
     logger.info("Query configuration client status")
 
-    port = SystemProperties::getConfigurationClientPort() + 1
+    port = SystemProperties::getConfigurationClientAdminPort()
     uri = URI("http://localhost:#{port}/status")
 
     response = nil

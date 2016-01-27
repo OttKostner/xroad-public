@@ -1,17 +1,25 @@
+xroad (6.7.10-1) trusty; urgency=low
+
+  * Change configuration client default port to 5675
+  * Security server message exchange performance optimizations
+  * Security server environmental monitoring
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Tue, 26 Jan 2016 10:23:45 +0200
+
 xroad (6.7.9-1) trusty; urgency=low
 
   * Fix timestamper connection checking
   * Fix timestamper status when batch timestamping is used
   * Timestamping diagnostics displays status for all defined timestamping services
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Fri, 15 Jan 2016 14:41:01 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Fri, 15 Jan 2016 14:41:01 +0200
 
 xroad (6.7.8-1) trusty; urgency=low
 
   * Security server offers diagnostics information for time stamping service
   * Fixed database backup to support generated passwords
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Thu, 7 Jan 2016 14:00:01 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Thu, 7 Jan 2016 14:00:01 +0200
 
 xroad (6.7.7-1) trusty; urgency=low
 
@@ -20,13 +28,13 @@ xroad (6.7.7-1) trusty; urgency=low
   * Security server offers diagnostics information for global configuration fetching
   * Taken to use HTML-attribute data-name to improve testability
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Wed, 9 Dec 2015 11:46:12 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Wed, 9 Dec 2015 11:46:12 +0200
 
 xroad (6.7.6-1) trusty; urgency=low
 
   * Fixed changing of security server configuration anchor
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 27 Nov 2015 12:50:01 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 27 Nov 2015 12:50:01 +0200
 
 xroad (6.7.5-1) trusty; urgency=low
 
@@ -34,7 +42,7 @@ xroad (6.7.5-1) trusty; urgency=low
   * Fixed XSS vulnerabilities in central server and security server user interfaces
   * Security server's internal TLS certificate can be replaced from the UI
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 26 Nov 2015 15:42:01 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 26 Nov 2015 15:42:01 +0200
 
 xroad (6.7.4-1) trusty; urgency=low
 
@@ -46,7 +54,7 @@ xroad (6.7.4-1) trusty; urgency=low
   * Fixed 'Global configuration expired' error occurring under heavy load
   * The password for messagelog and serverconf databases is generated during installation
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 12 Nov 2015 12:48:18 +0300
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Mon, 12 Nov 2015 12:48:18 +0200
 
 xroad (6.7.3-1) trusty; urgency=low
 

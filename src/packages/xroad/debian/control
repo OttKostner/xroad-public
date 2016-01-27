@@ -5,6 +5,14 @@ Maintainer: Tarmo Oja <Tarmo.Oja@cyber.ee>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.8.3
 
+Package: xroad-centralserver-monitoring
+Conflicts: xroad-securityserver
+Architecture: all
+Depends: xroad-centralserver (>=${source:Upstream-Version})
+Pre-depends:
+Description: Monitoring client configuration for X-Road central
+ This meta-package adds optional global monitoring configuration file.
+
 Package: xroad-common
 Architecture: amd64
 Depends: ${misc:Depends}, java8-runtime-headless, rlwrap, nginx-light (>=1.5.10), ca-certificates-java, ntp, crudini, adduser
@@ -14,7 +22,7 @@ Description: X-Road shared components
 Package: xroad-securityserver
 Conflicts: xroad-centralserver
 Architecture: all
-Depends: xroad-proxy (>=${source:Upstream-Version}), xroad-addon-metaservices (>=${source:Upstream-Version}), xroad-addon-messagelog (>=${source:Upstream-Version})
+Depends: xroad-proxy (>=${source:Upstream-Version}), xroad-addon-metaservices (>=${source:Upstream-Version}), xroad-addon-messagelog (>=${source:Upstream-Version}), xroad-addon-proxymonitor (>=${source:Upstream-Version})
 Pre-depends:
 Description: X-Road security server
  This is meta-package of X-Road security server.
@@ -45,6 +53,18 @@ Architecture: all
 Depends: ${misc:Depends}, xroad-proxy (>=${source:Upstream-Version})
 Description: X-Road AddOn: metaservices
  AddOn for metaservice reponders
+
+Package: xroad-addon-proxymonitor
+Architecture: all
+Depends: ${misc:Depends}, xroad-proxy (>=6.6), xroad-monitor (>=6.6)
+Description: X-Road AddOn: proxy monitoring metaservice
+ Addon for proxy monitoring
+
+Package: xroad-monitor
+Architecture: all
+Depends: ${misc:Depends}, xroad-common (>=6.6)
+Description: X-Road monitoring service
+ Monitoring service
 
 Package: xroad-securityserver-fi
 Conflicts: xroad-centralserver

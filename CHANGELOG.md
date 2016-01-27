@@ -1,5 +1,10 @@
 # Change Log
 
+## 6.7.10 - 2016-01-15
+- Change configuration client default port to 5675
+- Security server message exchange performance optimizations
+- Security server environmental monitoring
+
 ## 6.7.9 - 2016-01-15
 - Fix timestamper connection checking
 - Fix timestamper status when batch timestamping is used

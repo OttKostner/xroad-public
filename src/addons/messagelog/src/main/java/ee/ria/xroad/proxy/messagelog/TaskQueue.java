@@ -22,27 +22,22 @@
  */
 package ee.ria.xroad.proxy.messagelog;
 
-import java.util.Arrays;
-import java.util.List;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.hibernate.Session;
-import org.joda.time.DateTime;
-
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
-
 import ee.ria.xroad.common.messagelog.MessageLogProperties;
 import ee.ria.xroad.proxy.messagelog.Timestamper.TimestampFailed;
 import ee.ria.xroad.proxy.messagelog.Timestamper.TimestampSucceeded;
 import ee.ria.xroad.proxy.messagelog.Timestamper.TimestampTask;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static ee.ria.xroad.proxy.messagelog.LogManager.TIMESTAMPER_NAME;
 import static ee.ria.xroad.proxy.messagelog.MessageLogDatabaseCtx.doInTransaction;
-
 /**
  * Handles the TaskQueues -- adds tasks to the queue and sends the active queue
  * for time-stamping.
@@ -52,8 +47,6 @@ import static ee.ria.xroad.proxy.messagelog.MessageLogDatabaseCtx.doInTransactio
 public class TaskQueue extends UntypedActor {
 
     public static final String START_TIMESTAMPING = "StartTimestamping";
-
-    private final LogManager logManager;
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -76,20 +69,36 @@ public class TaskQueue extends UntypedActor {
                     Arrays.toString(message.getMessageRecords()));
         }
 
-        logManager.setTimestampSucceeded();
+        sendLogManagerTimestampingStatus(SetTimestampingStatusMessage.Status.SUCCESS);
         try {
-            logManager.saveTimestampRecord(message);
+            sendLogManagerSavedTimestamp(message);
         } catch (Exception e) {
-            log.error("Failed to save time-stamp record to database", e);
-
-            logManager.setTimestampFailed(new DateTime());
+            log.error("Failed to send message about storing time-stamp data", e);
+            sendLogManagerTimestampingStatus(SetTimestampingStatusMessage.Status.FAILURE);
         }
     }
 
-    protected void handleTimestampFailed(TimestampFailed message) {
-        log.trace("handleTimestampFailed()");
+    /**
+     * Sends successfully time stamped data to logManager for storing
+     * (previously logManager.saveTimestampRecord(message);)
+     * @param message
+     */
+    private void sendLogManagerSavedTimestamp(TimestampSucceeded message) {
+        SaveTimestampedDataMessage data = new SaveTimestampedDataMessage(message);
+        getContext().parent().tell(data, getSelf());
+    }
 
-        logManager.setTimestampFailed(new DateTime());
+    /**
+     * Sends time stamping status message to logManager
+     * @param status
+     */
+    private void sendLogManagerTimestampingStatus(SetTimestampingStatusMessage.Status status) {
+        SetTimestampingStatusMessage statusMessage = new SetTimestampingStatusMessage(status);
+        getContext().parent().tell(statusMessage, getSelf());
+    }
+
+    protected void handleTimestampFailed(TimestampFailed message) {
+        sendLogManagerTimestampingStatus(SetTimestampingStatusMessage.Status.FAILURE);
     }
 
     protected void handleStartTimestamping() {

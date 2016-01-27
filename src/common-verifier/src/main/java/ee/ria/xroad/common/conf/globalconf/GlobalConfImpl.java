@@ -248,6 +248,21 @@ class GlobalConfImpl implements GlobalConfProvider {
     }
 
     @Override
+    public String getSecurityServerAddress(SecurityServerId serverId) {
+        if (serverId == null) {
+            return null;
+        }
+
+        SharedParameters p = getSharedParameters(serverId.getXRoadInstance());
+        final SecurityServerType serverType = p.getSecurityServersById().get(serverId);
+        if (serverType != null) {
+            return serverType.getAddress();
+        }
+
+        return null;
+    }
+
+    @Override
     public List<String> getOcspResponderAddresses(X509Certificate member)
             throws Exception {
         List<String> responders = new ArrayList<>();

@@ -139,7 +139,6 @@ public class ProxyMessageEncoder implements ProxyMessageConsumer {
             // TODO #2604 handle xml+xop!
             mpEncoder.startPart(TEXT_XML_UTF8);
             mpEncoder.write(data);
-
             signer.addPart(MessageFileNames.MESSAGE, hashAlgoId, data);
         } catch (Exception ex) {
             throw translateException(ex);

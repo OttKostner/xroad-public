@@ -46,21 +46,6 @@ subprojects {
         provided
     }
 
-    configurations.all {
-//        resolutionStrategy.failOnVersionConflict()
-
-        // Let's replace the c3p0 ver. 0.9.1.1 required by Quartz
-        // with ver. 0.9.2.1 used by Hibernate
-        resolutionStrategy.eachDependency {
-            DependencyResolveDetails details ->
-                if (details.requested.group == 'c3p0' &&
-                        details.requested.name == 'c3p0' &&
-                        details.requested.version == '0.9.1.1') {
-                    details.useTarget "com.mchange:c3p0:0.9.2.1"
-                }
-        }
-    }
-
     dependencies {
         testCompile 'junit:junit:4.11'
 
@@ -109,7 +94,7 @@ subprojects {
 
     checkstyle {
         toolVersion = "6.1.1"
-        configFile = new File(rootDir, "doc/checkstyle-ria.xml")
+        configFile = new File(rootDir, "doc/checkstyle.xml")
         configProperties.config_loc = "$rootDir/doc"
         ignoreFailures = false
         showViolations = true

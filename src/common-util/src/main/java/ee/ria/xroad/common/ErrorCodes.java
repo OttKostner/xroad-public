@@ -95,6 +95,7 @@ public final class ErrorCodes {
     public static final String X_INVALID_CONTENT_TYPE = "InvalidContentType";
     public static final String X_INVALID_HTTP_METHOD = "InvalidHttpMethod";
     public static final String X_INVALID_MESSAGE = "InvalidMessage";
+    public static final String X_INVALID_SECURITY_SERVER = "InvalidSecurityServer";
     public static final String X_MIME_PARSING_FAILED = "MimeParsingFailed";
     public static final String X_MISSING_HEADER = "MissingHeader";
     public static final String X_MISSING_HEADER_FIELD = "MissingHeaderField";

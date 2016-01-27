@@ -302,6 +302,16 @@ public final class GlobalConf {
     }
 
     /**
+     * Returns address of the given service provider's proxy.
+     * @return IP address converted to string, such as "192.168.2.2".
+     */
+    public static String getSecurityServerAddress(
+            SecurityServerId serverId) {
+        log.trace("getSecurityServerAddress({})", serverId);
+
+        return getInstance().getSecurityServerAddress(serverId);
+    }
+    /**
      * Returns a list of OCSP responder addresses for the given member
      * certificate.
      * @param member the member certificate

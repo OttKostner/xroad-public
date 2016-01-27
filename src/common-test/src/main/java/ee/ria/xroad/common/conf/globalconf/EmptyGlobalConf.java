@@ -127,6 +127,11 @@ public class EmptyGlobalConf implements GlobalConfProvider {
     }
 
     @Override
+    public String getSecurityServerAddress(SecurityServerId serverId) {
+        return null;
+    }
+
+    @Override
     public boolean authCertMatchesMember(X509Certificate cert,
             ClientId memberId) throws Exception {
         return false;

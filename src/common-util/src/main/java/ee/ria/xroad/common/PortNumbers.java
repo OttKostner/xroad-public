@@ -54,6 +54,10 @@ public final class PortNumbers {
     /** Port for Distributed Files Client. */
     public static final int CONFIGURATION_CLIENT_PORT = 5665;
 
+    /** Port for Configuration Admin Port. */
+    public static final int CONFIGURATION_CLIENT_ADMIN_PORT = 5675;
+
+
     /** Admin port for monitor agents. */
     public static final int MONITOR_AGENT_ADMIN_PORT = 5588;
 
