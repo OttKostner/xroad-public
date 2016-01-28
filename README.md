@@ -35,9 +35,9 @@ Tip. When using the virtual build host, copy (or git clone) the source tree into
 
 Please file a [new issue](https://github.com/vrk-kpa/xroad-public/issues) at GitHub.
 
-### Workflow
+### Development guidelines
 
-Please see the [Workflow Policy](https://github.com/e-gov/Open-Workflow/blob/master/WORKFLOW.md) document.
+Please see [X-Road Joint Development](https://github.com/vrk-kpa/xroad-joint-development) repository for joint development work agreements and regulations.
 
 ### Copying and License
 
