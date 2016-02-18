@@ -1,10 +1,16 @@
+xroad (6.7.11-1) trusty; urgency=low
+
+  * Minor documentation changes
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Mon, 8 Feb 2016 16:32:45 +0200
+
 xroad (6.7.10-1) trusty; urgency=low
 
-  * Change configuration client default port to 5675
+  * Change configuration client admin port default to 5675 and make it configurable
   * Security server message exchange performance optimizations
   * Security server environmental monitoring
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Tue, 26 Jan 2016 10:23:45 +0200
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Tue, 26 Jan 2016 10:23:45 +0200
 
 xroad (6.7.9-1) trusty; urgency=low
 
@@ -12,7 +18,7 @@ xroad (6.7.9-1) trusty; urgency=low
   * Fix timestamper status when batch timestamping is used
   * Timestamping diagnostics displays status for all defined timestamping services
 
- -- Jarkko Hyöty <jarkko.hyoty@gofore.com>  Fri, 15 Jan 2016 14:41:01 +0200
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Fri, 15 Jan 2016 14:41:01 +0200
 
 xroad (6.7.8-1) trusty; urgency=low
 

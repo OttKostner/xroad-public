@@ -1,7 +1,10 @@
 # Change Log
 
+## 6.7.11 - 2016-02-08
+- Minor documentation changes
+
 ## 6.7.10 - 2016-01-15
-- Change configuration client default port to 5675
+- Change configuration client admin port default to 5675 and make it configurable
 - Security server message exchange performance optimizations
 - Security server environmental monitoring
 
