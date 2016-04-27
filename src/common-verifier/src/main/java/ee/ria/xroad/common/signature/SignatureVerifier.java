@@ -22,30 +22,6 @@
  */
 package ee.ria.xroad.common.signature;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.transform.dom.DOMSource;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.xml.security.signature.Manifest;
-import org.apache.xml.security.signature.MissingResourceFailureException;
-import org.apache.xml.security.signature.XMLSignature;
-import org.apache.xml.security.signature.XMLSignatureInput;
-import org.apache.xml.security.utils.resolver.ResourceResolverException;
-import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
-import org.bouncycastle.cert.ocsp.OCSPResp;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Node;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.cert.CertChain;
 import ee.ria.xroad.common.cert.CertChainVerifier;
@@ -57,6 +33,24 @@ import ee.ria.xroad.common.hashchain.HashChainVerifier;
 import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.util.CertUtils;
 import ee.ria.xroad.common.util.MessageFileNames;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.xml.security.signature.Manifest;
+import org.apache.xml.security.signature.MissingResourceFailureException;
+import org.apache.xml.security.signature.XMLSignature;
+import org.apache.xml.security.signature.XMLSignatureInput;
+import org.apache.xml.security.utils.resolver.ResourceResolverException;
+import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Node;
+
+import javax.xml.transform.dom.DOMSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 import static ee.ria.xroad.common.ErrorCodes.*;
 import static ee.ria.xroad.common.util.CryptoUtils.calculateDigest;
@@ -317,8 +311,7 @@ public class SignatureVerifier {
         }
     }
 
-    private void verifyCertificateChain(Date atDate, ClientId signer,
-            X509Certificate signingCert) {
+    private void verifyCertificateChain(Date atDate, ClientId signer, X509Certificate signingCert) {
         CertChain certChain =
                 CertChain.create(signer.getXRoadInstance(), signingCert,
                         signature.getExtraCertificates());

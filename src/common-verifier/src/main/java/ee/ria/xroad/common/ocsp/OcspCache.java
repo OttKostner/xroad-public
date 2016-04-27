@@ -22,17 +22,16 @@
  */
 package ee.ria.xroad.common.ocsp;
 
+import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.conf.globalconfextension.GlobalConfExtensions;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.bouncycastle.cert.ocsp.OCSPResp;
-
-import ee.ria.xroad.common.conf.globalconf.GlobalConf;
 
 /**
  * Holds OCSP response per key. When getting the response, it is checked
@@ -111,8 +110,8 @@ public class OcspCache {
 
     protected static boolean isExpired(OCSPResp response, Date atDate)
             throws Exception {
-        OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+        OcspVerifier verifier = new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true),
+                new OcspVerifierOptions(GlobalConfExtensions.getInstance().shouldVerifyOcspNextUpdate()));
         return verifier.isExpired(response, atDate);
     }
 }

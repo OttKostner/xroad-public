@@ -26,11 +26,10 @@ import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
-import lombok.extern.slf4j.Slf4j;
-
 import ee.ria.xroad.common.SystemProperties;
 import ee.ria.xroad.common.SystemPropertiesLoader;
 import ee.ria.xroad.common.util.AdminPort;
+import lombok.extern.slf4j.Slf4j;
 
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_PROXY;
 import static ee.ria.xroad.common.SystemProperties.CONF_FILE_SIGNER;
@@ -110,6 +109,17 @@ public final class SignerMain {
 
     private static AdminPort createAdminPort(int signerPort) {
         AdminPort port = new AdminPort(signerPort);
+
+        port.addHandler("/execute", new AdminPort.SynchronousCallback() {
+            @Override
+            public void run() {
+                try {
+                    signer.execute();
+                } catch (Exception ex) {
+                    log.error("error occurred in execute handler: {}", ex);
+                }
+            }
+        });
 
         port.addShutdownHook(SignerMain::shutdown);
 

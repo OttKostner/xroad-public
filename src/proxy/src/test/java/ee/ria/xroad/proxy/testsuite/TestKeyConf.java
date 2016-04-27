@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cert.ocsp.CertificateStatus;
 import org.bouncycastle.cert.ocsp.OCSPResp;
@@ -99,9 +100,8 @@ public class TestKeyConf extends EmptyKeyConf {
                         GlobalConf.getCaCert("EE", cert), getOcspSignerCert(),
                         getOcspRequestKey(), CertificateStatus.GOOD,
                         thisUpdate, null);
-                OcspVerifier verifier =
-                        new OcspVerifier(
-                                GlobalConf.getOcspFreshnessSeconds(false));
+                OcspVerifier verifier = new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false),
+                        new OcspVerifierOptions(true));
                 verifier.verifyValidityAndStatus(resp, cert,
                         GlobalConf.getCaCert("EE", cert));
                 ocspResponses.put(certHash, resp);

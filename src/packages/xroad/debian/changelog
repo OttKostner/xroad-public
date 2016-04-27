@@ -1,3 +1,15 @@
+xroad (6.7.12-1) trusty; urgency=low
+
+  * Fixed security server not starting if xroad-addon-messagelog is not installed
+  * Added connection timeouts to configuration client to prevent hanging problems
+  * In security server's keys and certificates view delete button now removes both key and certificates
+  * Signer reacts to ocspFreshnessSeconds parameter change immediately
+  * OCSP nextUpdate verification can be switched off with optional global configuration part
+  * Fixed bug in xroad-create-cluster.sh script that created the certificates with 30 days expiry period
+  * Fix software token batch signing setting
+
+ -- Jarkko Hyöty <jarkko.hyoty@gofore.com> Mon, 25 Apr 2016 14:51:45 +0300
+
 xroad (6.7.11-1) trusty; urgency=low
 
   * Minor documentation changes

@@ -147,6 +147,7 @@ class CachingKeyConfImpl extends KeyConfImpl {
     }
 
     private static boolean hasExpired(AbstractCachedInfo cachedInfo) {
+        log.trace("CachingKeyConfImpl.hasExpired cachedInfo={}", cachedInfo);
         return cachedInfo == null
                 || cachedInfo.getCreatedAt().plusSeconds(CACHE_PERIOD_SECONDS)
                         .isBeforeNow()

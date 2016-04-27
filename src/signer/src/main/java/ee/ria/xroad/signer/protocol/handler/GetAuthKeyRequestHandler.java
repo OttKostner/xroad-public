@@ -22,29 +22,25 @@
  */
 package ee.ria.xroad.signer.protocol.handler;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.bouncycastle.cert.ocsp.OCSPResp;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.conf.globalconfextension.GlobalConfExtensions;
 import ee.ria.xroad.common.identifier.SecurityServerId;
 import ee.ria.xroad.common.ocsp.OcspVerifier;
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import ee.ria.xroad.common.util.PasswordStore;
 import ee.ria.xroad.signer.protocol.AbstractRequestHandler;
-import ee.ria.xroad.signer.protocol.dto.AuthKeyInfo;
-import ee.ria.xroad.signer.protocol.dto.CertificateInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyUsageInfo;
-import ee.ria.xroad.signer.protocol.dto.TokenInfo;
+import ee.ria.xroad.signer.protocol.dto.*;
 import ee.ria.xroad.signer.protocol.message.GetAuthKey;
 import ee.ria.xroad.signer.tokenmanager.TokenManager;
 import ee.ria.xroad.signer.tokenmanager.module.SoftwareModuleType;
 import ee.ria.xroad.signer.tokenmanager.token.SoftwareTokenType;
 import ee.ria.xroad.signer.tokenmanager.token.SoftwareTokenUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import static ee.ria.xroad.common.ErrorCodes.X_KEY_NOT_FOUND;
 import static ee.ria.xroad.common.util.CryptoUtils.readCertificate;
@@ -120,8 +116,8 @@ public class GetAuthKeyRequestHandler
             cert.checkValidity();
 
             if (securityServer.equals(GlobalConf.getServerId(cert))) {
-                verifyOcspResponse(securityServer.getXRoadInstance(), cert,
-                        certInfo.getOcspBytes());
+                verifyOcspResponse(securityServer.getXRoadInstance(), cert, certInfo.getOcspBytes(),
+                        new OcspVerifierOptions(GlobalConfExtensions.getInstance().shouldVerifyOcspNextUpdate()));
                 return true;
             }
         } catch (Exception e) {
@@ -133,7 +129,7 @@ public class GetAuthKeyRequestHandler
     }
 
     private void verifyOcspResponse(String instanceIdentifier,
-            X509Certificate subject, byte[] ocspBytes) throws Exception {
+            X509Certificate subject, byte[] ocspBytes, OcspVerifierOptions verifierOptions) throws Exception {
         if (ocspBytes == null) {
             throw new CertificateException("OCSP response not found");
         }
@@ -142,7 +138,7 @@ public class GetAuthKeyRequestHandler
         X509Certificate issuer =
                 GlobalConf.getCaCert(instanceIdentifier, subject);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false), verifierOptions);
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 

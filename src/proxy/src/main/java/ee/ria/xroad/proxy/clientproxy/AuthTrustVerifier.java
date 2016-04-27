@@ -22,19 +22,6 @@
  */
 package ee.ria.xroad.proxy.clientproxy;
 
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.http.protocol.HttpContext;
-import org.bouncycastle.cert.ocsp.OCSPResp;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.cert.CertChain;
 import ee.ria.xroad.common.cert.CertHelper;
@@ -43,6 +30,17 @@ import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.identifier.ServiceId;
 import ee.ria.xroad.common.util.CertUtils;
 import ee.ria.xroad.proxy.conf.KeyConf;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.http.protocol.HttpContext;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static ee.ria.xroad.common.ErrorCodes.*;
 import static ee.ria.xroad.common.util.CertHashBasedOcspResponderClient.getOcspResponsesFromServer;
@@ -127,7 +125,9 @@ public final class AuthTrustVerifier {
             OCSPResp response = null;
             try {
                 // Do we have a cached OCSP response for that cert?
+                log.trace("get ocsp response from key conf");
                 response = KeyConf.getOcspResponse(cert);
+                log.trace("ocsp response from key conf: {}", response);
             } catch (CodedException e) {
                 // Log it and continue; only thrown if the response could
                 // not be loaded from a file -- not important to us here.
@@ -146,8 +146,11 @@ public final class AuthTrustVerifier {
         // Retrieve OCSP responses for those certs whose responses
         // are not locally available, from ServerProxy
         if (!certs.isEmpty()) {
+            log.trace("number of certs that still need ocsp responses: {}", certs.size());
             responses.addAll(getAndCacheOcspResponses(authCert,
                     serviceProvider, certs));
+        } else {
+            log.trace("all the certs have ocsp responses");
         }
 
         return responses;
@@ -169,6 +172,7 @@ public final class AuthTrustVerifier {
 
         List<OCSPResp> receivedResponses;
         try {
+            log.trace("get ocsp responses from server {}", address);
             receivedResponses = getOcspResponsesFromServer(address,
                     CertUtils.getCertHashes(hashes));
         } catch (Exception e) {
@@ -184,6 +188,7 @@ public final class AuthTrustVerifier {
         }
 
         // Cache the responses locally
+        log.trace("got ocsp responses, setting them to key conf");
         KeyConf.setOcspResponses(hashes, receivedResponses);
 
         return receivedResponses;

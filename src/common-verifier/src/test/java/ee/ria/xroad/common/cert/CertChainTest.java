@@ -22,25 +22,20 @@
  */
 package ee.ria.xroad.common.cert;
 
+import ee.ria.xroad.common.*;
+import ee.ria.xroad.common.conf.globalconf.EmptyGlobalConf;
+import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import org.bouncycastle.cert.ocsp.CertificateStatus;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.cert.ocsp.RevokedStatus;
+import org.junit.Test;
+
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.bouncycastle.cert.ocsp.CertificateStatus;
-import org.bouncycastle.cert.ocsp.OCSPResp;
-import org.bouncycastle.cert.ocsp.RevokedStatus;
-import org.junit.Test;
-
-import ee.ria.xroad.common.CodedException;
-import ee.ria.xroad.common.ErrorCodes;
-import ee.ria.xroad.common.OcspTestUtils;
-import ee.ria.xroad.common.TestCertUtil;
-import ee.ria.xroad.common.TestSecurityUtil;
-import ee.ria.xroad.common.conf.globalconf.EmptyGlobalConf;
-import ee.ria.xroad.common.conf.globalconf.GlobalConf;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

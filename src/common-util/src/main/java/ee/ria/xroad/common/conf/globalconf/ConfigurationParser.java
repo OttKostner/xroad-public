@@ -100,6 +100,8 @@ public class ConfigurationParser {
      */
     public synchronized Configuration parse(ConfigurationLocation location,
             String... contentIdentifiersToBeHandled) throws Exception {
+        log.trace("parse");
+
         configuration = new Configuration(location);
 
         contentIdentifiers = contentIdentifiersToBeHandled;

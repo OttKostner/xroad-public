@@ -22,11 +22,6 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Value;
 import org.hamcrest.Description;
@@ -34,7 +29,15 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for configuration downloader
@@ -88,6 +91,19 @@ public class ConfigurationDownloaderTest {
             // Then
             verifyLastSuccessfulLocationUsedSecondTime(downloader);
         }
+    }
+
+    /**
+     * Checks that ConfigurationDownloader uses connections that timeout
+     * after a period of time.
+     * @throws IOException
+     */
+    @Test
+    public void downloaderConnectionsTimeout() throws IOException {
+        URLConnection connection = ConfigurationDownloader.getDownloadURLConnection(
+                new URL("http://test.download.com"));
+        assertEquals(connection.getReadTimeout(), ConfigurationDownloader.READ_TIMEOUT);
+        assertTrue(connection.getReadTimeout() > 0);
     }
 
     private void resetParser(ConfigurationDownloader downloader) {

@@ -22,16 +22,9 @@
  */
 package ee.ria.xroad.signer;
 
-import java.util.concurrent.TimeUnit;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import scala.concurrent.duration.Duration;
-import scala.concurrent.duration.FiniteDuration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-
 import ee.ria.xroad.common.SystemProperties;
 import ee.ria.xroad.common.util.PeriodicJob;
 import ee.ria.xroad.common.util.StartStop;
@@ -42,7 +35,12 @@ import ee.ria.xroad.signer.tokenmanager.TokenManager;
 import ee.ria.xroad.signer.tokenmanager.module.AbstractModuleManager;
 import ee.ria.xroad.signer.tokenmanager.module.DefaultModuleManagerImpl;
 import ee.ria.xroad.signer.util.Update;
-import ee.ria.xroad.signer.util.VariableIntervalPeriodicJob;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
+
+import java.util.concurrent.TimeUnit;
 
 import static ee.ria.xroad.signer.protocol.ComponentNames.*;
 
@@ -71,7 +69,19 @@ public class Signer implements StartStop {
 
         createComponent(OCSP_RESPONSE_MANAGER, OcspResponseManager.class);
         createComponent(OCSP_CLIENT, OcspClientWorker.class);
-        createComponent(OcspClientJob.class);
+        createComponent(OCSP_CLIENT_JOB, OcspClientJob.class);
+        createComponent(OCSP_CLIENT_RELOAD, OcspClientReload.class);
+    }
+
+    /**
+     * Executes polling immediately
+     */
+    public void execute() throws Exception {
+        log.trace("sending cancel");
+        actorSystem.actorSelection("/user/" + OCSP_CLIENT_JOB).tell(OcspClientJob.CANCEL, ActorRef.noSender());
+        log.trace("sending execute");
+        actorSystem.actorSelection("/user/" + OCSP_CLIENT_JOB).tell(OcspClientWorker.EXECUTE, ActorRef.noSender());
+        log.trace("done");
     }
 
     @Override
@@ -129,28 +139,4 @@ public class Signer implements StartStop {
         }
     }
 
-    /**
-     * Periodically executes the OcspClient
-     */
-    private static class OcspClientJob extends VariableIntervalPeriodicJob {
-
-        private static final FiniteDuration INITIAL_DELAY =
-                FiniteDuration.create(100, TimeUnit.MILLISECONDS);
-
-        OcspClientJob() {
-            super(OCSP_CLIENT, OcspClientWorker.EXECUTE);
-        }
-
-        @Override
-        protected FiniteDuration getInitialDelay() {
-            return INITIAL_DELAY;
-        }
-
-        @Override
-        protected FiniteDuration getNextDelay() {
-            return FiniteDuration.create(
-                    OcspClientWorker.getNextOcspFreshnessSeconds(),
-                    TimeUnit.SECONDS);
-        }
-    }
 }

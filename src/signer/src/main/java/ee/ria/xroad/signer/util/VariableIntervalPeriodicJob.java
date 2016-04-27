@@ -22,18 +22,20 @@
  */
 package ee.ria.xroad.signer.util;
 
-import java.util.concurrent.TimeUnit;
-
-import lombok.RequiredArgsConstructor;
-import scala.concurrent.duration.FiniteDuration;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.UntypedActor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import scala.concurrent.duration.FiniteDuration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
- * Periodic job with potentialli variable intereval. The next interval is
+ * Periodic job with potentially variable interval. The next interval is
  * calculated after each time the job is run.
  */
+@Slf4j
 @RequiredArgsConstructor
 public abstract class VariableIntervalPeriodicJob extends UntypedActor {
 
@@ -45,6 +47,7 @@ public abstract class VariableIntervalPeriodicJob extends UntypedActor {
     @Override
     public void onReceive(Object incoming) throws Exception {
         if (incoming.equals(this.message)) {
+            log.debug("received message {}", this.message);
             getContext().actorSelection("/user/" + actor).tell(incoming,
                     getSelf());
             scheduleNextSend(getNextDelay());
@@ -60,9 +63,7 @@ public abstract class VariableIntervalPeriodicJob extends UntypedActor {
 
     @Override
     public void postStop() {
-        if (nextSend != null) {
-            nextSend.cancel();
-        }
+        cancelNextSend();
     }
 
     protected void scheduleNextSend(FiniteDuration delay) {
@@ -79,4 +80,14 @@ public abstract class VariableIntervalPeriodicJob extends UntypedActor {
     }
 
     protected abstract FiniteDuration getNextDelay();
+
+    protected void cancelNextSend() {
+        if (nextSend != null) {
+            if (!nextSend.isCancelled()) {
+                log.debug("cancelling nextSend");
+                boolean result = nextSend.cancel();
+                log.debug("cancel called, return value: {}", result);
+            }
+        }
+    }
 }

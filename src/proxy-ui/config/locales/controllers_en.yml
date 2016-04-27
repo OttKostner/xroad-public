@@ -70,6 +70,7 @@ en:
       client_delreq: "send deletion request"
       wsdl_add: "add WSDL"
     client_exists: "Client already exists"
+    client_does_not_exist: "Client does not exist"
     unregistered_member: "The person/organisation '%{member}' is not registered as X-Road member."
     new_subsystem: "New subsystem '%{subsystem}' will be registered for member '%{member}'."
     cert_in_use: "in use"

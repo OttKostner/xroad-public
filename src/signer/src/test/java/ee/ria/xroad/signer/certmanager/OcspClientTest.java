@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.TestActorRef;
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import org.bouncycastle.cert.ocsp.CertificateStatus;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
@@ -115,7 +116,7 @@ public class OcspClientTest {
         assertNotNull(ocsp);
 
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject,
                 GlobalConf.getCaCert("EE", subject));
     }
@@ -147,7 +148,7 @@ public class OcspClientTest {
         assertNotNull(ocsp);
 
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject,
                 GlobalConf.getCaCert("EE", subject));
     }
@@ -341,7 +342,7 @@ public class OcspClientTest {
 
     private void queryAndUpdateCertStatus(OcspClientWorker client,
             X509Certificate subject) throws Exception {
-        OCSPResp response = client.queryCertStatus(subject);
+        OCSPResp response = client.queryCertStatus(subject, new OcspVerifierOptions(true));
         String subjectHash = calculateCertHexHash(subject);
         OCSP_RESPONSES.put(subjectHash, response);
     }

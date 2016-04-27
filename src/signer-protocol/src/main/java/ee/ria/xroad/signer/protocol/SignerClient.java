@@ -21,30 +21,19 @@
  * THE SOFTWARE.
  */
 package ee.ria.xroad.signer.protocol;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.joda.time.DateTime;
-
-import scala.concurrent.duration.FiniteDuration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
-import akka.actor.Cancellable;
-import akka.actor.PoisonPill;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
-
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.SystemProperties;
-import ee.ria.xroad.signer.protocol.message.ConnectionPing;
-import ee.ria.xroad.signer.protocol.message.ConnectionPong;
+import lombok.extern.slf4j.Slf4j;
+import scala.concurrent.Await;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static ee.ria.xroad.common.ErrorCodes.X_HTTP_ERROR;
 import static ee.ria.xroad.signer.protocol.ComponentNames.REQUEST_PROCESSOR;
@@ -63,8 +52,6 @@ public final class SignerClient {
     private static ActorSystem actorSystem;
     private static ActorSelection requestProcessor;
 
-    private static Boolean connected;
-
     private SignerClient() {
     }
 
@@ -82,34 +69,17 @@ public final class SignerClient {
             requestProcessor = system.actorSelection(
                     getSignerPath() + "/user/" + REQUEST_PROCESSOR);
 
-            system.actorOf(Props.create(ConnectionPinger.class),
-                    "ConnectionPinger");
         }
     }
 
     /**
-     * Sends a message and waits for any response. Does not return the response.
-     * If the response is an exception, throws it.
+     * Forwards a message to the signer.
      * @param message the message
      * @param receiver the receiver actor
-     * @throws Exception if the response is an exception
      */
-    public static void execute(Object message, ActorRef receiver)
-            throws Exception {
+    public static void execute(Object message, ActorRef receiver) {
         verifyInitialized();
-        verifyConnected();
-
-        CountDownLatch latch = new CountDownLatch(1);
-
-        ActorRef executionCtx = actorSystem.actorOf(
-                Props.create(ReceiverExecutionCtx.class, latch, receiver));
-
-        requestProcessor.tell(message, executionCtx);
-        try {
-            waitForResponse(latch);
-        } finally {
-            executionCtx.tell(PoisonPill.getInstance(), ActorRef.noSender());
-        }
+        requestProcessor.tell(message, receiver);
     }
 
     /**
@@ -122,20 +92,12 @@ public final class SignerClient {
      */
     public static <T> T execute(Object message) throws Exception {
         verifyInitialized();
-        verifyConnected();
 
-        CountDownLatch latch = new CountDownLatch(1);
-        Response response = new Response();
-
-        ActorRef executionCtx = actorSystem.actorOf(
-                Props.create(ResponseExecutionCtx.class, latch, response));
-
-        requestProcessor.tell(message, executionCtx);
+        final Timeout timeout = Timeout.apply(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         try {
-            waitForResponse(latch);
-            return result(response.getValue());
-        } finally {
-            executionCtx.tell(PoisonPill.getInstance(), ActorRef.noSender());
+            return result(Await.result(Patterns.ask(requestProcessor, message, timeout), timeout.duration()));
+        } catch (TimeoutException te) {
+            throw connectionTimeoutException();
         }
     }
 
@@ -156,17 +118,6 @@ public final class SignerClient {
         }
     }
 
-    private static void waitForResponse(CountDownLatch latch) {
-        try {
-            if (!latch.await(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-                throw new TimeoutException();
-            }
-        } catch (Exception e) {
-            log.error("Exception when waiting for response", e);
-            throw connectionTimeoutException();
-        }
-    }
-
     private static String getSignerPath() {
         return "akka.tcp://" + SIGNER + "@127.0.0.1:"
                 + SystemProperties.getSignerPort();
@@ -178,112 +129,10 @@ public final class SignerClient {
         }
     }
 
-    private static void verifyConnected() {
-        if (connected != null && !connected) {
-            throw connectionTimeoutException();
-        }
-    }
-
     private static CodedException connectionTimeoutException() {
         return new CodedException(X_HTTP_ERROR,
                 "Connection to Signer (port %s) timed out",
                 SystemProperties.getSignerPort());
     }
 
-    @Data
-    private static class Response {
-        private Object value;
-    }
-
-    @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-    private static class ReceiverExecutionCtx extends UntypedActor {
-
-        private final CountDownLatch latch;
-        private final ActorRef receiver;
-
-        @Override
-        public void onReceive(Object message) throws Exception {
-            log.trace("onReceive({})", message);
-
-            if (receiver != ActorRef.noSender()) {
-                receiver.tell(message, getSender());
-            }
-
-            latch.countDown();
-        }
-    }
-
-    @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-    private static class ResponseExecutionCtx extends UntypedActor {
-
-        private final CountDownLatch latch;
-        private final Response response;
-
-        @Override
-        public void onReceive(Object message) throws Exception {
-            log.trace("onReceive({})", message);
-
-            response.setValue(message);
-            latch.countDown();
-        }
-    }
-
-    @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-    private static class ConnectionPinger extends UntypedActor {
-
-        private static final FiniteDuration INITIAL_DELAY =
-                FiniteDuration.create(100, TimeUnit.MILLISECONDS);
-
-        private final FiniteDuration interval =
-                FiniteDuration.create(5, TimeUnit.SECONDS);
-
-        private Cancellable tick;
-        private DateTime lastPong;
-        private boolean firstPing = true;
-
-        @Override
-        public void preStart() throws Exception {
-            tick = start();
-        }
-
-        @Override
-        public void postStop() {
-            tick.cancel();
-        }
-
-        @Override
-        public void onReceive(Object message) throws Exception {
-            if (message instanceof ConnectionPing) {
-                requestProcessor.tell(message, getSelf());
-
-                if (!firstPing) {
-                    checkConnected();
-                } else {
-                    firstPing = false;
-                }
-            } else if (message instanceof ConnectionPong) {
-                connected = true;
-                lastPong = new DateTime();
-            }
-        }
-
-        private void checkConnected() {
-            if (lastPong == null || hasTimedOut()) {
-                connected = false;
-                log.trace("Connection timed out");
-            }
-        }
-
-        private boolean hasTimedOut() {
-            long now = new DateTime().getMillis();
-            long diff = now - lastPong.getMillis();
-            return diff > TIMEOUT_MILLIS;
-        }
-
-        private Cancellable start() {
-            return getContext().system().scheduler().schedule(
-                    INITIAL_DELAY, interval, getSelf(), new ConnectionPing(),
-                    getContext().dispatcher(), ActorRef.noSender());
-        }
-    }
 }

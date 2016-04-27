@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ee.ria.xroad.common.conf.globalconfextension.GlobalConfExtensions;
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import org.bouncycastle.cert.ocsp.OCSPResp;
 
 import ee.ria.xroad.common.CodedException;
@@ -160,8 +162,8 @@ public class CertChainVerifier {
                         + subject.getSubjectX500Principal().getName());
             }
 
-            OcspVerifier verifier =
-                    new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false));
+            OcspVerifier verifier = new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false),
+                    new OcspVerifierOptions(GlobalConfExtensions.getInstance().shouldVerifyOcspNextUpdate()));
             verifier.verifyValidityAndStatus(response, subject, issuer,
                     atDate);
         }

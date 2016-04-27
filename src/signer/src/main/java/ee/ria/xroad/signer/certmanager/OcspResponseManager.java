@@ -22,21 +22,12 @@
  */
 package ee.ria.xroad.signer.certmanager;
 
-import java.io.Serializable;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.Map.Entry;
-
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-
-import org.bouncycastle.cert.ocsp.OCSPResp;
-
 import akka.actor.Props;
 import akka.actor.UntypedActorContext;
-
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.conf.globalconfextension.GlobalConfExtensions;
+import ee.ria.xroad.common.ocsp.OcspVerifier;
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import ee.ria.xroad.signer.protocol.message.GetOcspResponses;
 import ee.ria.xroad.signer.protocol.message.GetOcspResponsesResponse;
 import ee.ria.xroad.signer.protocol.message.SetOcspResponses;
@@ -44,6 +35,15 @@ import ee.ria.xroad.signer.tokenmanager.ServiceLocator;
 import ee.ria.xroad.signer.tokenmanager.TokenManager;
 import ee.ria.xroad.signer.util.AbstractSignerActor;
 import ee.ria.xroad.signer.util.SignerUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+
+import java.io.Serializable;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.Map.Entry;
 
 import static ee.ria.xroad.common.util.CryptoUtils.*;
 
@@ -179,10 +179,23 @@ public class OcspResponseManager extends AbstractSignerActor {
 
         Boolean isCached = response != null;
 
+        if (response != null) {
+            log.trace("got response from cache, now verifying validity");
+            OcspVerifier verifier = new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true),
+                    new OcspVerifierOptions(GlobalConfExtensions.getInstance().shouldVerifyOcspNextUpdate()));
+            X509Certificate subject = SignerUtil.getCertForCertHash(message.getCertHash());
+            X509Certificate issuer = GlobalConf.getCaCert(GlobalConf.getInstanceIdentifier(), subject);
+            try {
+                verifier.verifyValidity(response, subject, issuer);
+                log.trace("verifyValidity succeeded");
+            } catch (Exception e) {
+                log.trace("ocsp verifyValidity failed, exception: {}", e);
+                isCached = Boolean.FALSE;
+            }
+        }
         log.trace("'{}' (at: {}) cached: {}",
                 new Object[] {message.getCertHash(), message.getAtDate(),
                     isCached });
-
         sendResponse(isCached);
     }
 
@@ -247,7 +260,7 @@ public class OcspResponseManager extends AbstractSignerActor {
         OCSPResp downloadOcspResponse(String certHash) throws Exception {
             log.trace("downloadOcspResponse({})", certHash);
 
-            X509Certificate cert = getCertForCertHash(certHash);
+            X509Certificate cert = SignerUtil.getCertForCertHash(certHash);
             if (cert == null) {
                 log.warn("Could not find certificate for hash {}", certHash);
                 // unknown certificate
@@ -262,24 +275,6 @@ public class OcspResponseManager extends AbstractSignerActor {
                         + " (hash: " + certHash + ")", e);
                 return null;
             }
-        }
-
-        private X509Certificate getCertForCertHash(String certHash)
-                throws Exception {
-            X509Certificate cert =
-                    TokenManager.getCertificateForCertHash(certHash);
-            if (cert != null) {
-                return cert;
-            }
-
-            // not in key conf, look elsewhere
-            for (X509Certificate caCert : GlobalConf.getAllCaCerts()) {
-                if (certHash.equals(calculateCertHexHash(caCert))) {
-                    return caCert;
-                }
-            }
-
-            return null;
         }
     }
 }

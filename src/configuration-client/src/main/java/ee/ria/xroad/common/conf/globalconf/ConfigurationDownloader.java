@@ -22,13 +22,7 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-
+import ee.ria.xroad.common.CodedException;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +30,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.operator.DigestCalculator;
 
-import ee.ria.xroad.common.CodedException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 import static ee.ria.xroad.common.ErrorCodes.X_IO_ERROR;
 import static ee.ria.xroad.common.ErrorCodes.X_MALFORMED_GLOBALCONF;
@@ -47,6 +48,8 @@ import static ee.ria.xroad.common.util.CryptoUtils.*;
  */
 @Slf4j
 class ConfigurationDownloader {
+
+    public static final int READ_TIMEOUT = 30000;
 
     protected final FileNameProvider fileNameProvider;
     protected final String[] instanceIdentifiers;
@@ -99,6 +102,7 @@ class ConfigurationDownloader {
     }
 
     private void rememberLastSuccessfulLocation(ConfigurationLocation location) {
+        log.trace("rememberLastSuccessfulLocation source={} location={}", location.getSource(), location);
         lastSuccessfulLocation.put(location.getSource(), location);
     }
 
@@ -121,7 +125,10 @@ class ConfigurationDownloader {
     private void preferLastSuccessLocation(
             ConfigurationSource source, List<ConfigurationLocation> result) {
         if (lastSuccessfulLocation != null) {
+            log.trace("preferLastSuccessLocation source={} location={}", source, lastSuccessfulLocation.get(source));
             result.add(lastSuccessfulLocation.get(source));
+        } else {
+            log.trace("preferLastSuccessLocation lastSuccessfulLocation=null");
         }
     }
 
@@ -189,10 +196,9 @@ class ConfigurationDownloader {
 
     byte[] downloadContent(ConfigurationLocation location,
             ConfigurationFile file) throws Exception {
-        URL url = getDownloadURL(location, file);
-
-        log.info("Downloading content from {}", url);
-        try (InputStream in = url.openStream()) {
+        URLConnection connection = getDownloadURLConnection(getDownloadURL(location, file));
+        log.info("Downloading content from {}", connection.getURL());
+        try (InputStream in = connection.getInputStream()) {
             return IOUtils.toByteArray(in);
         }
     }
@@ -292,10 +298,16 @@ class ConfigurationDownloader {
         }
     }
 
-    URL getDownloadURL(ConfigurationLocation location,
+    public static URL getDownloadURL(ConfigurationLocation location,
             ConfigurationFile file) throws Exception {
         return new URI(location.getDownloadURL()).resolve(
                 file.getContentLocation()).toURL();
+    }
+
+    public static URLConnection getDownloadURLConnection(URL url) throws IOException {
+        URLConnection connection = url.openConnection();
+        connection.setReadTimeout(READ_TIMEOUT);
+        return connection;
     }
 
     // ------------------------------------------------------------------------

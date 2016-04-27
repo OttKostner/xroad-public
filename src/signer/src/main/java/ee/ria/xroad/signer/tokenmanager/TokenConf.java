@@ -22,21 +22,9 @@
  */
 package ee.ria.xroad.signer.tokenmanager;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import ee.ria.xroad.common.SystemProperties;
 import ee.ria.xroad.common.conf.AbstractXmlConf;
-import ee.ria.xroad.common.conf.keyconf.CertRequestType;
-import ee.ria.xroad.common.conf.keyconf.CertificateType;
-import ee.ria.xroad.common.conf.keyconf.DeviceType;
-import ee.ria.xroad.common.conf.keyconf.KeyConfType;
-import ee.ria.xroad.common.conf.keyconf.KeyType;
-import ee.ria.xroad.common.conf.keyconf.ObjectFactory;
+import ee.ria.xroad.common.conf.keyconf.*;
 import ee.ria.xroad.signer.model.Cert;
 import ee.ria.xroad.signer.model.CertRequest;
 import ee.ria.xroad.signer.model.Key;
@@ -44,6 +32,11 @@ import ee.ria.xroad.signer.model.Token;
 import ee.ria.xroad.signer.tokenmanager.module.SoftwareModuleType;
 import ee.ria.xroad.signer.tokenmanager.token.TokenType;
 import ee.ria.xroad.signer.util.SignerUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static ee.ria.xroad.common.util.CryptoUtils.*;
 
@@ -192,6 +185,11 @@ public final class TokenConf extends AbstractXmlConf<KeyConfType> {
         token.setSlotIndex(type.getPinIndex() != null ? type.getPinIndex() : 0);
         token.setSerialNumber(type.getTokenId());
         token.setLabel(type.getSlotId());
+
+        // software token forgets batch signing setting
+        if (SoftwareModuleType.TYPE.equals(token.getType())) {
+            token.setBatchSigningEnabled(true);
+        }
 
         for (KeyType keyType : type.getKey()) {
             token.addKey(from(token, keyType));

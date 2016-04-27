@@ -22,30 +22,8 @@
  */
 package ee.ria.xroad.common.signature;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 import akka.actor.ActorSystem;
 import com.typesafe.config.ConfigFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.cert.ocsp.CertificateStatus;
-import org.bouncycastle.cert.ocsp.OCSPResp;
-import org.bouncycastle.operator.DigestCalculator;
-import org.joda.time.DateTime;
-
 import ee.ria.xroad.common.OcspTestUtils;
 import ee.ria.xroad.common.TestCertUtil;
 import ee.ria.xroad.common.TestSecurityUtil;
@@ -55,6 +33,23 @@ import ee.ria.xroad.common.util.CryptoUtils;
 import ee.ria.xroad.common.util.MessageFileNames;
 import ee.ria.xroad.proxy.signedmessage.SignerSigningKey;
 import ee.ria.xroad.signer.protocol.SignerClient;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.cert.ocsp.CertificateStatus;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.operator.DigestCalculator;
+import org.joda.time.DateTime;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static ee.ria.xroad.common.util.CryptoUtils.*;
 

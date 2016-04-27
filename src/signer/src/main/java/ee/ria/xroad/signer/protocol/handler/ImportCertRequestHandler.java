@@ -22,12 +22,6 @@
  */
 package ee.ria.xroad.signer.protocol.handler;
 
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Date;
-
-import lombok.extern.slf4j.Slf4j;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.cert.CertChain;
 import ee.ria.xroad.common.cert.CertChainVerifier;
@@ -35,15 +29,16 @@ import ee.ria.xroad.common.conf.globalconf.GlobalConf;
 import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.util.CertUtils;
 import ee.ria.xroad.signer.certmanager.OcspResponseManager;
-import ee.ria.xroad.signer.protocol.dto.CertRequestInfo;
-import ee.ria.xroad.signer.protocol.dto.CertificateInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyInfo;
-import ee.ria.xroad.signer.protocol.dto.KeyUsageInfo;
-import ee.ria.xroad.signer.protocol.dto.TokenInfo;
+import ee.ria.xroad.signer.protocol.dto.*;
 import ee.ria.xroad.signer.protocol.message.ImportCert;
 import ee.ria.xroad.signer.protocol.message.ImportCertResponse;
 import ee.ria.xroad.signer.tokenmanager.TokenManager;
 import ee.ria.xroad.signer.util.SignerUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Date;
 
 import static ee.ria.xroad.common.ErrorCodes.*;
 import static ee.ria.xroad.common.util.CryptoUtils.*;

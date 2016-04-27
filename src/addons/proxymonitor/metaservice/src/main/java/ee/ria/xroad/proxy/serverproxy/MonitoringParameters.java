@@ -31,11 +31,6 @@ import ee.ria.xroad.common.conf.globalconf.monitoringparameters.ObjectFactory;
  * Monitoring parameters
  */
 public class MonitoringParameters extends AbstractXmlConf<MonitoringParametersType> {
-    /**
-     * The content identifier for the monitoring parameters.
-     */
-    public static final String CONTENT_ID_MONITORING_PARAMETERS =
-            "MONITORING";
 
     /**
      * The default file name of monitoring parameters.

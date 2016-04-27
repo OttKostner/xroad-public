@@ -22,6 +22,22 @@
  */
 package ee.ria.xroad.signer.util;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.signer.protocol.dto.KeyInfo;
+import ee.ria.xroad.signer.protocol.dto.TokenInfo;
+import ee.ria.xroad.signer.tokenmanager.TokenManager;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import scala.concurrent.Await;
+
+import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
@@ -31,21 +47,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.DatatypeConverter;
-
-import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
-import org.bouncycastle.operator.ContentSigner;
-import scala.concurrent.Await;
-
-import ee.ria.xroad.signer.protocol.dto.KeyInfo;
-import ee.ria.xroad.signer.protocol.dto.TokenInfo;
+import static ee.ria.xroad.common.util.CryptoUtils.calculateCertHexHash;
 
 /**
  * Collection of various utility methods.
@@ -246,4 +248,23 @@ public final class SignerUtil {
         return workerId;
     }
 
+    /**
+     * @return certificate matching certHash
+     */
+    public static X509Certificate getCertForCertHash(String certHash)
+            throws Exception {
+        X509Certificate cert =
+                TokenManager.getCertificateForCertHash(certHash);
+        if (cert != null) {
+            return cert;
+        }
+
+        // not in key conf, look elsewhere
+        for (X509Certificate caCert : GlobalConf.getAllCaCerts()) {
+            if (certHash.equals(calculateCertHexHash(caCert))) {
+                return caCert;
+            }
+        }
+        return null;
+    }
 }

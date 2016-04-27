@@ -22,28 +22,26 @@
  */
 package ee.ria.xroad.common.signature;
 
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
-import akka.actor.UntypedActorWithStash;
+import akka.actor.*;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import lombok.Data;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import scala.concurrent.Await;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.signer.protocol.SignerClient;
 import ee.ria.xroad.signer.protocol.message.GetTokenBatchSigningEnabled;
 import ee.ria.xroad.signer.protocol.message.Sign;
 import ee.ria.xroad.signer.protocol.message.SignResponse;
+import lombok.Data;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.operator.OperatorCreationException;
+import scala.concurrent.Await;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static ee.ria.xroad.common.ErrorCodes.*;
 import static ee.ria.xroad.common.util.CryptoUtils.*;
@@ -296,7 +294,8 @@ public class BatchSigner extends UntypedActor {
         }
 
         private void doCalculateSignature(String keyId,
-                String signatureAlgorithmId, byte[] data) throws Exception {
+                String signatureAlgorithmId, byte[] data) throws
+                NoSuchAlgorithmException, IOException, OperatorCreationException {
             workerBusy = true;
             signStartTime = System.currentTimeMillis();
 
@@ -304,8 +303,7 @@ public class BatchSigner extends UntypedActor {
                     getDigestAlgorithmId(signatureAlgorithmId), data);
 
             // Proxy this request to the Signer.
-            SignerClient.execute(new Sign(keyId, signatureAlgorithmId, digest),
-                    getSelf());
+            SignerClient.execute(new Sign(keyId, signatureAlgorithmId, digest), getSelf());
         }
 
         private void sendResponse(Object message) {

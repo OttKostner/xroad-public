@@ -22,24 +22,24 @@
  */
 package ee.ria.xroad.signer.protocol.handler;
 
-import java.security.cert.X509Certificate;
-import java.util.List;
-
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
-import org.bouncycastle.cert.ocsp.OCSPResp;
-
 import ee.ria.xroad.common.CodedException;
 import ee.ria.xroad.common.conf.globalconf.GlobalConf;
+import ee.ria.xroad.common.conf.globalconfextension.GlobalConfExtensions;
 import ee.ria.xroad.common.identifier.ClientId;
 import ee.ria.xroad.common.ocsp.OcspVerifier;
+import ee.ria.xroad.common.ocsp.OcspVerifierOptions;
 import ee.ria.xroad.signer.protocol.AbstractRequestHandler;
 import ee.ria.xroad.signer.protocol.dto.CertificateInfo;
 import ee.ria.xroad.signer.protocol.dto.KeyInfo;
 import ee.ria.xroad.signer.protocol.dto.MemberSigningInfo;
 import ee.ria.xroad.signer.protocol.message.GetMemberSigningInfo;
 import ee.ria.xroad.signer.tokenmanager.TokenManager;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static ee.ria.xroad.common.ErrorCodes.X_INTERNAL_ERROR;
 import static ee.ria.xroad.common.ErrorCodes.X_UNKNOWN_MEMBER;
@@ -121,11 +121,12 @@ public class GetMemberSigningInfoRequestHandler
             byte[] ocspBytes) throws Exception {
         X509Certificate subject = readCertificate(certBytes);
         subject.checkValidity();
-        verifyOcspResponse(instanceIdentifier, ocspBytes, subject);
+        verifyOcspResponse(instanceIdentifier, ocspBytes, subject,
+                new OcspVerifierOptions(GlobalConfExtensions.getInstance().shouldVerifyOcspNextUpdate()));
     }
 
     private void verifyOcspResponse(String instanceIdentifier,
-            byte[] ocspBytes, X509Certificate subject) throws Exception {
+            byte[] ocspBytes, X509Certificate subject, OcspVerifierOptions verifierOptions) throws Exception {
         if (ocspBytes == null) {
             throw new Exception("OCSP response for certificate "
                     + subject.getSubjectX500Principal().getName()
@@ -136,7 +137,7 @@ public class GetMemberSigningInfoRequestHandler
         X509Certificate issuer =
                 GlobalConf.getCaCert(instanceIdentifier, subject);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(false), verifierOptions);
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 }

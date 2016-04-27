@@ -78,7 +78,7 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject, subject);
     }
 
@@ -94,7 +94,7 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, issuer, issuer);
     }
 
@@ -109,7 +109,7 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, issuer, signer);
     }
 
@@ -131,12 +131,12 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, issuer, anotherSignerCert);
     }
 
     /**
-     * Tests that verifying fails if OCSP has expired.
+     * Tests that verifying fails if OCSP response thisUpdate is newer than now
      * @throws Exception if an error occurs
      */
     @Test
@@ -148,12 +148,12 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 
     /**
-     * Tests that verifying fails if OCSP has expired.
+     * Tests that verifying fails if OCSP response nextUpdate is older than now
      * @throws Exception if an error occurs
      */
     @Test
@@ -165,7 +165,23 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_INCORRECT_VALIDATION_INFO);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
+        verifier.verifyValidityAndStatus(ocsp, subject, issuer);
+    }
+
+    /**
+     * Tests that verifying does not fail if OCSP response nextUpdate is before now and nextUpdate
+     * verification is turned off.
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void nextUpdateBeforeNow() throws Exception {
+        Date nextUpdate = new DateTime().minus(12345L).toDate();
+        OCSPResp ocsp = OcspTestUtils.createOCSPResponse(subject, issuer,
+                signer, signerKey, CertificateStatus.GOOD,
+                new Date(), nextUpdate);
+        OcspVerifier verifier =
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(false));
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 
@@ -181,7 +197,7 @@ public class OcspVerifierTest {
                 thisUpdate, null);
 
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 
@@ -199,7 +215,7 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_CERT_VALIDATION);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 
@@ -216,7 +232,7 @@ public class OcspVerifierTest {
 
         thrown.expectError(X_CERT_VALIDATION);
         OcspVerifier verifier =
-                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true));
+                new OcspVerifier(GlobalConf.getOcspFreshnessSeconds(true), new OcspVerifierOptions(true));
         verifier.verifyValidityAndStatus(ocsp, subject, issuer);
     }
 

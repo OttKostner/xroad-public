@@ -402,8 +402,6 @@ class KeysController < ApplicationController
       authorize!(:delete_key)
     end
 
-    delete_from_token = key.certRequests.isEmpty
-
     key.certs.each do |cert|
       if key.usage == KeyUsageInfo::AUTHENTICATION &&
          [CertificateInfo::STATUS_REGINPROG,
@@ -412,11 +410,10 @@ class KeysController < ApplicationController
         unregister_cert(cert.certificateBytes)
         SignerProxy::setCertStatus(cert.id, CertificateInfo::STATUS_DELINPROG)
       end
-
-      delete_from_token = false if cert.savedToConfiguration
     end
 
-    SignerProxy::deleteKey(params[:key_id], delete_from_token)
+    SignerProxy::deleteKey(params[:key_id], false)
+    SignerProxy::deleteKey(params[:key_id], true)
 
     render_tokens
   end

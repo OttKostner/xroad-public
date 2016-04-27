@@ -22,19 +22,19 @@
  */
 package ee.ria.xroad.common.conf.globalconf;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-
+import ee.ria.xroad.common.CodedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import ee.ria.xroad.common.CodedException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.List;
 
 import static ee.ria.xroad.common.ErrorCodes.X_HTTP_ERROR;
 import static ee.ria.xroad.common.util.CryptoUtils.*;
@@ -53,16 +53,30 @@ public class ConfigurationLocation {
 
     private final List<byte[]> verificationCerts;
 
+    public static final int READ_TIMEOUT = 30000;
+
     /**
      * @return the input stream acquired by connecting to the download url.
      * @throws Exception if an error occurs
      */
     public InputStream getInputStream() throws Exception {
         try {
-            return new URL(downloadURL).openStream();
+            URLConnection connection = getDownloadURLConnection(downloadURL);
+            return connection.getInputStream();
         } catch (IOException e) {
             throw new CodedException(X_HTTP_ERROR, e);
         }
+    }
+
+    /**
+     * @return the connection used to connect to the download url
+     * @throws IOException
+     */
+    public static URLConnection getDownloadURLConnection(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+        URLConnection connection = url.openConnection();
+        connection.setReadTimeout(READ_TIMEOUT);
+        return connection;
     }
 
     /**
@@ -125,5 +139,10 @@ public class ConfigurationLocation {
     private static byte[] hash(String hashAlgoId, byte[] data)
             throws Exception {
         return calculateDigest(getAlgorithmId(hashAlgoId), data);
+    }
+
+    @Override
+    public String toString() {
+        return downloadURL;
     }
 }

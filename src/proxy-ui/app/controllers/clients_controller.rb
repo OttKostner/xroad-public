@@ -451,7 +451,12 @@ class ClientsController < ApplicationController
       cache_client_ids
     end
 
-    ClientDAOImpl.new.getClient(
-      ServerConfDatabaseCtx.session, session[:client_ids][key])
+    if session[:client_ids][key].nil?
+      raise t('clients.client_does_not_exist')
+    else
+      ClientDAOImpl.new.getClient(
+          ServerConfDatabaseCtx.session, session[:client_ids][key])
+    end
+
   end
 end

@@ -9,7 +9,7 @@
     <element name="conf" type="tns:MonitoringParametersType">
         <annotation>
             <documentation>
-                TODO
+                Monitoring client configuration
             </documentation>
         </annotation>
     </element>
@@ -20,7 +20,7 @@
                      type="tns:MonitoringClientType">
                 <annotation>
                     <documentation>
-                        Monitoring client, which is athorized to query monitoring data from all security servers.
+                        Monitoring client, which is authorized to query monitoring data from all security servers.
                     </documentation>
                 </annotation>
             </element>
@@ -34,7 +34,7 @@
                      type="id:XroadClientIdentifierType">
                 <annotation>
                     <documentation>
-                        Identifier of the X-Road member or subsystem which is athorized to query monitoring data from all security servers.
+                        Identifier of the X-Road member or subsystem which is authorized to query monitoring data from all security servers.
                     </documentation>
                 </annotation>
             </element>
