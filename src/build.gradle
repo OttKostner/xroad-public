@@ -123,7 +123,7 @@ subprojects {
         }
     }
 
-    task buildall(dependsOn: [build, ':proxy-ui:warble']) {
+    task buildall(dependsOn: [build, ':proxy-ui:warble', ':center-ui:warble', ':center-service:warble']) {
         description = "Builds all that can be built (even the slow tasks)"
     }
 

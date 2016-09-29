@@ -41,8 +41,8 @@ cp -p %{src}/../../doc/archive-hashchain-verifier.rb %{buildroot}/usr/share/doc/
 cp -p %{src}/../../doc/archive-hashchain-verifier.README %{buildroot}/usr/share/doc/xroad-addon-messagelog/archive-hashchain-verifier/README
 cp -p %{src}/../../asicverifier/build/libs/asicverifier-1.0.jar %{buildroot}/usr/share/xroad/jlib/
 ln -s /usr/share/xroad/jlib/asicverifier-1.0.jar %{buildroot}/usr/share/xroad/jlib/asicverifier.jar
-cp -p %{src}/../../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/
-cp -p %{src}/../../../LICENSE.info %{buildroot}/usr/share/doc/%{name}/
+cp -p %{src}/../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/
+cp -p %{src}/../../securityserver-LICENSE.info %{buildroot}/usr/share/doc/%{name}/
 
 %clean
 rm -rf %{buildroot}
@@ -61,7 +61,7 @@ rm -rf %{buildroot}
 /usr/share/xroad/scripts/archive-http-transporter.sh
 /usr/share/xroad/jlib/asicverifier.jar
 %doc /usr/share/doc/%{name}/LICENSE.txt
-%doc /usr/share/doc/%{name}/LICENSE.info
+%doc /usr/share/doc/%{name}/securityserver-LICENSE.info
 
 %post
 

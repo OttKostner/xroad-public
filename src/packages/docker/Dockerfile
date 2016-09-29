@@ -5,5 +5,5 @@ RUN yum -y install sudo git rpm-build java-1.8.0-openjdk-headless
 RUN yum clean all
 RUN sed -i 's/requiretty/!requiretty/' /etc/sudoers
 
-CMD ["sh", "-c", "/xroad/src/packages/build-xroad-rpm.sh && /xroad/src/packages/build-jetty-rpm.sh" ]
-
+USER jenkins
+CMD ["sh", "-c", "/workspace/xtee6/packages/build-xroad-rpm.sh && /workspace/xtee6/packages/build-jetty-rpm.sh" ]

@@ -64,8 +64,8 @@ cp -p %{src}/../default-configuration/async-sender-logback.xml %{buildroot}/etc/
 cp -p %{src}/../default-configuration/rsyslog.d/* %{buildroot}/etc/rsyslog.d/
 cp -p %{src}/debian/xroad-proxy.logrotate %{buildroot}/etc/logrotate.d/xroad-proxy
 cp -p %{src}/debian/trusty/proxy_restore_db.sh %{buildroot}/usr/share/xroad/scripts/restore_db.sh
-cp -p %{src}/../../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/LICENSE.txt
-cp -p %{src}/../../../LICENSE.info %{buildroot}/usr/share/doc/%{name}/LICENSE.info
+cp -p %{src}/../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/LICENSE.txt
+cp -p %{src}/../../securityserver-LICENSE.info %{buildroot}/usr/share/doc/%{name}/securityserver-LICENSE.info
 
 ln -s /usr/share/xroad/jlib/proxy-1.0.jar %{buildroot}/usr/share/xroad/jlib/proxy.jar
 ln -s /usr/share/xroad/jlib/async-sender-1.0.jar %{buildroot}/usr/share/xroad/jlib/async-sender.jar
@@ -124,7 +124,7 @@ rm -rf %{buildroot}
 /usr/share/xroad/scripts/restore_db.sh
 /usr/share/xroad/scripts/verify_internal_configuration.sh
 %doc /usr/share/doc/%{name}/LICENSE.txt
-%doc /usr/share/doc/%{name}/LICENSE.info
+%doc /usr/share/doc/%{name}/securityserver-LICENSE.info
 
 %pre
 if [ $1 -gt 1 ] ; then

@@ -10,7 +10,7 @@ fi
 source ~/.rvm/scripts/rvm
 rvm use jruby-1.7.25
 
-RUBY_PROJECTS="common-ui proxy-ui"
+RUBY_PROJECTS="center-service common-ui center-common proxy-ui center-ui"
 
 for each in $RUBY_PROJECTS
 do

@@ -67,8 +67,8 @@ cp -p %{src}/../../libs/libpkcs11wrapper.so %{buildroot}/usr/share/xroad/lib/
 cp -p %{src}/../../lib/libpasswordstore.so %{buildroot}/usr/share/xroad/lib/
 cp -p %{src}/../../configuration-client/build/libs/configuration-client-1.0.jar %{buildroot}/usr/share/xroad/jlib/
 cp -p %{src}/../default-configuration/confclient-logback.xml %{buildroot}/etc/xroad/conf.d
-cp -p %{src}/../../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/LICENSE.txt
-cp -p %{src}/../../../LICENSE.info %{buildroot}/usr/share/doc/%{name}/LICENSE.info
+cp -p %{src}/../../LICENSE.txt %{buildroot}/usr/share/doc/%{name}/LICENSE.txt
+cp -p %{src}/../../securityserver-LICENSE.info %{buildroot}/usr/share/doc/%{name}/securityserver-LICENSE.info
 
 %clean
 rm -rf %{buildroot}
@@ -107,7 +107,7 @@ rm -rf %{buildroot}
 %attr(754,xroad,xroad) %{_bindir}/xroad-signer
 %attr(664,root,root) %{_unitdir}/xroad-signer.service
 %doc /usr/share/doc/%{name}/LICENSE.txt
-%doc /usr/share/doc/%{name}/LICENSE.info
+%doc /usr/share/doc/%{name}/securityserver-LICENSE.info
 
 %pre
 if ! getent passwd xroad > /dev/null; then

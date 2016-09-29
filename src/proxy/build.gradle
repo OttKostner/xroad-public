@@ -27,7 +27,7 @@ fatJar {
     exclude "META-INF/*.DSA"
     exclude "META-INF/*.RSA"
 
-    from rootProject.file("securityserver-LICENSE.txt")
+    from rootProject.file("LICENSE.txt")
 
     manifest {
         attributes 'Main-Class': 'ee.ria.xroad.proxy.ProxyMain'

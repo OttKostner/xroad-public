@@ -47,7 +47,7 @@ def get_allowed_roles(subproject)
   return result
 end
 
-def generate_privileges(role, subproject)
+def generate_privileges(role, subproject = "center-ui")
   privileges_file = get_filepath(subproject, "privileges.yml")
   new_privileges = ""
 
