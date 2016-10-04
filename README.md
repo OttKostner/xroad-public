@@ -31,6 +31,10 @@ Tip. When using the virtual build host, copy (or git clone) the source tree into
 - A Dockerfile that creates a rpm packaging environment and builds rpm packages is provided in src/packages/docker
     - Note. The minimal build environment created using the Vagrantfile does not contain Docker.
 
+### Installing an X-Road instance
+
+See [ansible/README.md](ansible/README.md).
+
 ### Support / Contact / Contribution
 
 Please file a [new issue](https://github.com/vrk-kpa/xroad-public/issues) at GitHub.
