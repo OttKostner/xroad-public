@@ -1,6 +1,6 @@
 # X-Road
 
-This repository provides the source code of the X-Road software. X-Road is used as a backbone of the Finnish National Data Exchange Layer (Kansallinen palveluväylä), and it's developed in cooperation between the Estonian Information System Authority (RIA) and the Population Register Centre (VRK). The workflow policy for collaborative and open source software development of X-Road is described in the [workflow policy](WORKFLOW.md) document.
+This repository provides the source code of the X-Road software. X-Road is used as a backbone of the Finnish National Data Exchange Layer (Kansallinen palveluväylä), and it's developed in cooperation between the Estonian Information System Authority (RIA) and the Population Register Centre (VRK). The workflow policy for collaborative and open source software development of X-Road is described in the [workflow policy](https://github.com/vrk-kpa/xroad-joint-development/blob/master/WORKFLOW.md) document.
 
 ### Getting started
 
